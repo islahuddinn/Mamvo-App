@@ -184,7 +184,7 @@ const { URL } = require("url");
 const Event = require("../Models/eventModel");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
-  const apiLink = process.env.API_BASE_URL;
+  const { apiLink } = process.env.API_BASE_URL;
 
   let parsedUrl;
   try {
@@ -259,8 +259,8 @@ exports.fetchDataFromAPI = async (req, res, next) => {
         longitude: event.location.longitude,
         timezone: event.location.timezone,
       },
-      eventType: "Todo", // Assuming you want to set a default event type
-      createdBy: req.user ? req.user._id : null, // Assuming you have a user object in the request
+      eventType: "Todo",
+      createdBy: req.user ? req.user._id : null,
     }));
 
     await Event.insertMany(events);
