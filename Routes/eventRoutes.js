@@ -5,7 +5,7 @@ const apiController = require("../Controllers/apiController");
 const eventController = require("../Controllers/eventController");
 const router = express.Router();
 
-// router.use(authController.protect);
+router.use(authController.protect);
 router.post(
   "/create",
   // authController.protect,
