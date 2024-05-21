@@ -187,6 +187,10 @@ exports.fetchDataFromAPI = async (req, res, next) => {
   const apiLink = process.env.API_BASE_URL;
   const apiKey = process.env.API_KEY;
 
+  // Log environment variables for debugging
+  console.log("API Base URL:", apiLink);
+  console.log("API Key:", apiKey);
+
   // Check if environment variables are properly set
   if (!apiLink || !apiKey) {
     console.error(
@@ -215,7 +219,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
 
   // Extract and set query parameters
   const params = {
-    organization_id: req.query.organization_id,
+    organization_id: req.query.organization_id || "",
     start_date: req.query.start_date || "",
     end_date: req.query.end_date || "",
     limit: req.query.limit || 50,
@@ -239,14 +243,27 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       params,
     });
     const data = response.data;
-    console.log("Data fetched successfully:", data);
 
-    // Validate the data before inserting into the database
-    if (!Array.isArray(data)) {
-      throw new Error("API response is not an array");
+    // Log the actual response to understand the structure
+    console.log("API Response:", JSON.stringify(data, null, 2));
+
+    // Check if the response contains an array
+    let eventsArray = [];
+    if (Array.isArray(data)) {
+      eventsArray = data;
+    } else if (data.events && Array.isArray(data.events)) {
+      eventsArray = data.events;
+    } else {
+      console.error("API response does not contain an array:", data);
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Unexpected API response format",
+        data: { apiData: data },
+      });
     }
 
-    const events = data.events.map((event) => ({
+    const events = eventsArray.map((event) => ({
       name: event.name,
       slug: event.slug,
       description: event.description || "",
@@ -272,8 +289,8 @@ exports.fetchDataFromAPI = async (req, res, next) => {
         longitude: event.location.longitude,
         timezone: event.location.timezone,
       },
-      eventType: "Todo",
-      createdBy: req.user ? req.user._id : null,
+      eventType: "Todo", // Assuming you want to set a default event type
+      createdBy: req.user ? req.user._id : null, // Assuming you have a user object in the request
     }));
 
     // Insert events into the database
