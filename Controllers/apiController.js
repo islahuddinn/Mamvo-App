@@ -97,7 +97,9 @@ const Event = require("../Models/eventModel");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
   const apiLink = process.env.API_BASE_URL;
-
+  console.log(apiLink, "yumbumb api link");
+  const api_key = process.env.API_KEY;
+  console.log(api_key, "yup api key");
   let parsedUrl;
   try {
     parsedUrl = new URL(apiLink);
@@ -123,7 +125,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
   // No need to validate query parameters as they are optional
 
   const headers = {
-    "X-Api-Key": process.env.API_KEY,
+    "X-Api-Key": api_key,
     "Content-Type": "application/json",
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
@@ -131,7 +133,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     "Accept-Language": "en-US,en;q=0.9",
     Connection: "keep-alive",
   };
-
+  console.log(headers, "yomolopo header g");
   // Make an HTTP request to fetch data from the API
   try {
     console.log("Fetching data from API:", apiLink);
