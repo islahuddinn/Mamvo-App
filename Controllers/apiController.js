@@ -94,6 +94,7 @@
 const axios = require("axios");
 const { URL } = require("url");
 const Event = require("../Models/eventModel");
+const dotenv = require("dotenv");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
   const apiLink = process.env.API_BASE_URL;
@@ -123,7 +124,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
   // No need to validate query parameters as they are optional
 
   const headers = {
-    "X-Api-Key": process.env.API_KEY, // Replace with your actual API key
+    "X-Api-Key": process.env.API_KEY,
     "Content-Type": "application/json",
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
