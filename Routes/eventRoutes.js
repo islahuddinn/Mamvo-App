@@ -5,7 +5,7 @@ const apiController = require("../Controllers/apiController");
 const eventController = require("../Controllers/eventController");
 const router = express.Router();
 
-router.use(authController.protect);
+// router.use(authController.protect);
 router.post(
   "/create",
   // authController.protect,
@@ -16,6 +16,8 @@ router.post(
 
 router.get("/", eventController.getallEvent);
 router.get("/get-events", apiController.fetchDataFromAPI);
+router.get("/getEventByType", eventController.getEventByType);
+router.get("/getAllEventLocations", eventController.getAllEventLocations);
 
 router
   .route("/:id")

@@ -34,6 +34,11 @@ const eventSchema = new mongoose.Schema({
     type: Date,
     // required: true,
   },
+  eventType: {
+    type: String,
+    enum: ["Todo", "Electronica", "Commercial", "Regue"],
+    required: true,
+  },
 });
 
 const Event = mongoose.model("Event", eventSchema);

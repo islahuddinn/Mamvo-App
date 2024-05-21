@@ -173,7 +173,7 @@ exports.createSubscription = catchAsync(async (req, res, next) => {
       ephemeralKey,
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
       publishableKey:
-        "pk_test_51LVrpTDvaubKxP1oDwMPA0AF1twyVDXvxvgMmcAlxhqtOS6uPSHrMl2kA47XkWZLEwJ6xY2DWvt7swpxWPavQC9F00aBWuFM26",
+        "pk_test_51OjhhtCeCdY6x3DbXwdsT1lCpwwno7b666vrYorHrhlhY266fTZcyAEYEFnzAnDU5LkxEKgQbn9ieubooCaA4m9h00Ku0S40rr",
       subscription,
     });
     // }

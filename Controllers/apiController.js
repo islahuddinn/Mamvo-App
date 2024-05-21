@@ -1,20 +1,16 @@
 const axios = require("axios");
 const catchAsync = require("../Utils/catchAsync");
+const { URL } = require("url");
 
-// Example function to check if the PR code is valid
-// const checkIfValidPRCode = (prCode) => {
-//   // Implement your logic to check the validity of the PR code
-//   // For example, you can check against a database of valid PR codes
-//   return true; // Replace with your actual validation logic
-// };
-
-exports.fetchDataFromAPI = catchAsync(async (req, res, next) => {
+exports.fetchDataFromAPI = async (req, res, next) => {
   const { apiLink } = req.body;
 
   // Validate if the provided API link is a valid URL
+  let parsedUrl;
   try {
-    new URL(apiLink);
+    parsedUrl = new URL(apiLink);
   } catch (error) {
+    console.error("Invalid API link:", apiLink, error.message);
     return res.status(400).json({
       status: 400,
       success: false,
@@ -23,11 +19,52 @@ exports.fetchDataFromAPI = catchAsync(async (req, res, next) => {
     });
   }
 
+  // Extract query parameters from the URL
+  const params = {
+    organization_id: parsedUrl.searchParams.get("organization_id"),
+    start_date: parsedUrl.searchParams.get("start_date"),
+    end_date: parsedUrl.searchParams.get("end_date"),
+    limit: parsedUrl.searchParams.get("limit"),
+    offset: parsedUrl.searchParams.get("offset"),
+  };
+
+  // Validate required parameters
+  if (
+    !params.start_date ||
+    !params.end_date ||
+    !params.limit ||
+    !params.offset
+  ) {
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      message: "Missing required query parameters",
+      data: {},
+    });
+  }
+
+  const headers = {
+    Authorization:
+      "sk_test_2jRIs1i0WWS6WwqCSgGe66oQEQUSmU06I2q06I6SsWkMYGOs2skKUIMusG2uUYwgasYSIKUCkKM2WmqC2COKsesYWeoKYCESWYkG",
+    "Content-Type": "application/json",
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+    Accept: "application/json",
+    "Accept-Language": "en-US,en;q=0.9",
+    Connection: "keep-alive",
+  };
+
   // Make an HTTP request to fetch data from the API
   try {
-    const response = await axios.get(apiLink);
+    console.log("Fetching data from API:", apiLink);
+    const response = await axios.get(parsedUrl.origin + parsedUrl.pathname, {
+      headers,
+      params,
+      withCredentials: true,
+    });
     const data = response.data;
 
+    console.log("Data fetched successfully:", data);
     res.status(200).json({
       status: 200,
       success: true,
@@ -35,7 +72,11 @@ exports.fetchDataFromAPI = catchAsync(async (req, res, next) => {
       data: { apiData: data },
     });
   } catch (error) {
-    console.error("Error fetching data from API:", error.message);
+    console.error(
+      "Error fetching data from API:",
+      error.message,
+      error.response?.data || ""
+    );
     return res.status(500).json({
       status: 500,
       success: false,
@@ -43,4 +84,4 @@ exports.fetchDataFromAPI = catchAsync(async (req, res, next) => {
       data: {},
     });
   }
-});
+};

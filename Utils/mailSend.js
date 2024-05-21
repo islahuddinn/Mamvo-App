@@ -122,7 +122,7 @@ module.exports = class Email {
   //     `Welcome, Your Join OTP is: ${a}`,
   //     `Account Setup Verification For Mamvo App`
   //   );
-  // }
+  // }  
 
   async sendPasswordReset(a) {
     await this.send(

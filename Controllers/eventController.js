@@ -12,6 +12,7 @@ exports.createEvent = catchAsync(async (req, res, next) => {
   const {
     title,
     description,
+    eventType,
     location,
     image,
     price,
@@ -24,6 +25,7 @@ exports.createEvent = catchAsync(async (req, res, next) => {
   const newEvent = new Event({
     title,
     description,
+    eventType,
     location,
     image,
     price,
@@ -81,12 +83,97 @@ exports.createEvent = catchAsync(async (req, res, next) => {
   });
 });
 
+//// get event by type
+exports.getEventByType = catchAsync(async (req, res, next) => {
+  const eventType = req.body.eventType; // Assuming event type is provided in the request body
+  const user = req.user;
+
+  if (!eventType) {
+    return res.status(400).json({
+      success: false,
+      status: 400,
+      message: "Event type is required",
+    });
+  }
+
+  try {
+    const events = await Event.find({ eventType: eventType });
+
+    if (!events.length) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "Events not found for the provided event type",
+      });
+    }
+
+    // Assuming you want to return multiple events for the provided event type
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      data: {
+        user: {
+          userId: user._id,
+          referralCode: user.referralCode,
+        },
+        events: events.map((event) => ({
+          eventId: event.id,
+          title: event.title,
+          description: event.description,
+          // Add other fields as needed
+        })),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    });
+  }
+});
+
+//////  Get all event Locations
+
+exports.getAllEventLocations = catchAsync(async (req, res, next) => {
+  try {
+    const events = await Event.find({}, "location");
+
+    if (!events.length) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "No events found",
+      });
+    }
+
+    const locations = events.map((event) => event.location);
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      data: {
+        locations: locations,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Internal server error",
+    });
+  }
+});
+
 /////// Update events
 
 exports.updateEvent = catchAsync(async (req, res, next) => {
   const {
     title,
     description,
+    eventType,
     location,
     image,
     price,
@@ -110,6 +197,7 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
     }
     eventToUpdate.title = title;
     eventToUpdate.description = description;
+    eventToUpdate.eventType = eventType;
     eventToUpdate.location = location;
     eventToUpdate.image = image;
     eventToUpdate.price = price;

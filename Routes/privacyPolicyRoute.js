@@ -7,7 +7,6 @@ const router = express.Router();
 router.post(
   "/create",
   authController.protect,
-  //   authController.restrictTo("admin"),
   PrivacyController.setCreator,
   PrivacyController.createPrivacy
 );
