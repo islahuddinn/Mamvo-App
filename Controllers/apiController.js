@@ -215,7 +215,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
 
   // Extract and set query parameters
   const params = {
-    organization_id: req.query.organization_id || "",
+    organization_id: req.query.organization_id,
     start_date: req.query.start_date || "",
     end_date: req.query.end_date || "",
     limit: req.query.limit || 50,
