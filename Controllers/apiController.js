@@ -184,7 +184,21 @@ const { URL } = require("url");
 const Event = require("../Models/eventModel");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
-  const { apiLink } = process.env.API_BASE_URL;
+  const apiLink = process.env.API_BASE_URL;
+  const apiKey = process.env.API_KEY;
+
+  // Check if environment variables are properly set
+  if (!apiLink || !apiKey) {
+    console.error(
+      "API_BASE_URL or API_KEY is not set in environment variables"
+    );
+    return res.status(500).json({
+      status: 500,
+      success: false,
+      message: "Internal server error: Missing API configuration",
+      data: {},
+    });
+  }
 
   let parsedUrl;
   try {
@@ -199,21 +213,17 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     });
   }
 
-  // Extract query parameters from the request
+  // Extract and set query parameters
   const params = {
-    organization_id: req.query.organization_id,
-    start_date: req.query.start_date,
-    end_date: req.query.end_date,
-    limit: req.query.limit,
-    offset: req.query.offset,
+    organization_id: req.query.organization_id || "",
+    start_date: req.query.start_date || "",
+    end_date: req.query.end_date || "",
+    limit: req.query.limit || 50,
+    offset: req.query.offset || 0,
   };
 
-  // Set default values if not provided
-  params.limit = params.limit || 50;
-  params.offset = params.offset || 0;
-
   const headers = {
-    "X-Api-Key": process.env.API_KEY,
+    "X-Api-Key": apiKey,
     "Content-Type": "application/json",
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
@@ -222,7 +232,6 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     Connection: "keep-alive",
   };
 
-  // Make an HTTP request to fetch data from the API
   try {
     console.log("Fetching data from API:", apiLink);
     const response = await axios.get(parsedUrl.origin + parsedUrl.pathname, {
@@ -232,14 +241,18 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     const data = response.data;
     console.log("Data fetched successfully:", data);
 
-    // Insert multiple events into the database
+    // Validate the data before inserting into the database
+    if (!Array.isArray(data)) {
+      throw new Error("API response is not an array");
+    }
+
     const events = data.map((event) => ({
       name: event.name,
       slug: event.slug,
       description: event.description || "",
-      display_date: event.display_date,
-      start_date: event.start_date,
-      end_date: event.end_date,
+      display_date: new Date(event.display_date),
+      start_date: new Date(event.start_date),
+      end_date: new Date(event.end_date),
       code: event.code,
       age: event.age,
       image_url: event.image_url || "",
@@ -263,6 +276,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       createdBy: req.user ? req.user._id : null,
     }));
 
+    // Insert events into the database
     await Event.insertMany(events);
 
     res.status(200).json({
