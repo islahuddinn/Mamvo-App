@@ -120,20 +120,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     offset: req.query.offset || null,
   };
 
-  // Validate required parameters
-  if (
-    !params.start_date ||
-    !params.end_date ||
-    !params.limit ||
-    !params.offset
-  ) {
-    return res.status(400).json({
-      status: 400,
-      success: false,
-      message: "Missing required query parameters",
-      data: {},
-    });
-  }
+  // No need to validate query parameters as they are optional
 
   const headers = {
     "X-Api-Key": process.env.API_KEY, // Replace with your actual API key
@@ -157,36 +144,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     console.log("Data fetched successfully:", data);
 
     // Insert fetched data into the database
-    // Adjust the database insert logic based on your schema and database module
-    const events = data.map((event) => ({
-      name: event.name,
-      slug: event.slug,
-      description: event.description,
-      display_date: event.display_date,
-      start_date: event.start_date,
-      end_date: event.end_date,
-      code: event.code,
-      age: event.age,
-      image_url: event.image_url,
-      outfit: event.outfit,
-      ambiences: event.ambiences,
-      music_genres: event.music_genres,
-      artists: event.artists,
-      organization_id: event.organization_id,
-      location_id: event.location_id,
-      location: {
-        _id: event.location._id,
-        address: event.location.address,
-        city: event.location.city,
-        country: event.location.country,
-        full_address: event.location.full_address,
-        latitude: event.location.latitude,
-        longitude: event.location.longitude,
-        timezone: event.location.timezone,
-      },
-    }));
-
-    await Event.insertMany(events);
+    await Event.insertMany(data);
 
     res.status(200).json({
       status: 200,
