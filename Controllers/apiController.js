@@ -242,42 +242,42 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     console.log("Data fetched successfully:", data);
 
     // Validate the data before inserting into the database
-    if (!Array.isArray(data)) {
-      throw new Error("API response is not an array");
-    }
+    // if (!Array.isArray(data)) {
+    //   throw new Error("API response is not an array");
+    // }
 
-    const events = data.map((event) => ({
-      name: event.name,
-      slug: event.slug,
-      description: event.description || "",
-      display_date: new Date(event.display_date),
-      start_date: new Date(event.start_date),
-      end_date: new Date(event.end_date),
-      code: event.code,
-      age: event.age,
-      image_url: event.image_url || "",
-      outfit: event.outfit || "casual",
-      ambiences: event.ambiences || [],
-      music_genres: event.music_genres || [],
-      artists: event.artists || [],
-      organization_id: event.organization_id,
-      location_id: event.location_id,
-      location: {
-        _id: event.location._id,
-        address: event.location.address,
-        city: event.location.city,
-        country: event.location.country,
-        full_address: event.location.full_address,
-        latitude: event.location.latitude,
-        longitude: event.location.longitude,
-        timezone: event.location.timezone,
-      },
-      eventType: "Todo",
-      createdBy: req.user ? req.user._id : null,
-    }));
+    // const events = data.map((event) => ({
+    //   name: event.name,
+    //   slug: event.slug,
+    //   description: event.description || "",
+    //   display_date: new Date(event.display_date),
+    //   start_date: new Date(event.start_date),
+    //   end_date: new Date(event.end_date),
+    //   code: event.code,
+    //   age: event.age,
+    //   image_url: event.image_url || "",
+    //   outfit: event.outfit || "casual",
+    //   ambiences: event.ambiences || [],
+    //   music_genres: event.music_genres || [],
+    //   artists: event.artists || [],
+    //   organization_id: event.organization_id,
+    //   location_id: event.location_id,
+    //   location: {
+    //     _id: event.location._id,
+    //     address: event.location.address,
+    //     city: event.location.city,
+    //     country: event.location.country,
+    //     full_address: event.location.full_address,
+    //     latitude: event.location.latitude,
+    //     longitude: event.location.longitude,
+    //     timezone: event.location.timezone,
+    //   },
+    //   eventType: "Todo",
+    //   createdBy: req.user ? req.user._id : null,
+    // }));
 
     // Insert events into the database
-    await Event.insertMany(events);
+    await Event.insertMany(data);
 
     res.status(200).json({
       status: 200,
