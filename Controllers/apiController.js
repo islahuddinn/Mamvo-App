@@ -242,28 +242,24 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       headers,
       params,
     });
-    const data = response.data;
+    const responseData = response.data;
 
     // Log the actual response to understand the structure
-    console.log("API Response:", JSON.stringify(data, null, 2));
+    console.log("API Response:", JSON.stringify(responseData, null, 2));
 
-    // Check if the response contains an array
-    let eventsArray = [];
-    if (Array.isArray(data)) {
-      eventsArray = data;
-    } else if (data.events && Array.isArray(data.events)) {
-      eventsArray = data.events;
-    } else {
-      console.error("API response does not contain an array:", data);
+    // Validate the data before inserting into the database
+    const data = responseData.data;
+    if (!Array.isArray(data)) {
+      console.error("API response is not an array:", data);
       return res.status(500).json({
         status: 500,
         success: false,
         message: "Unexpected API response format",
-        data: { apiData: data },
+        data: { apiData: responseData },
       });
     }
 
-    const events = eventsArray.map((event) => ({
+    const events = data.map((event) => ({
       name: event.name,
       slug: event.slug,
       description: event.description || "",
@@ -289,8 +285,8 @@ exports.fetchDataFromAPI = async (req, res, next) => {
         longitude: event.location.longitude,
         timezone: event.location.timezone,
       },
-      eventType: "Todo", // Assuming you want to set a default event type
-      createdBy: req.user ? req.user._id : null, // Assuming you have a user object in the request
+      eventType: "Todo",
+      createdBy: req.user ? req.user._id : null,
     }));
 
     // Insert events into the database
@@ -300,7 +296,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       status: 200,
       success: true,
       message: "Data fetched and saved successfully",
-      data: { apiData: data },
+      data: { apiData: responseData },
     });
   } catch (error) {
     console.error(
