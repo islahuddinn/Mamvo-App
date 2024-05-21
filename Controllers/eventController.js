@@ -85,7 +85,7 @@ exports.createEvent = catchAsync(async (req, res, next) => {
 
 //// get event by type
 exports.getEventByType = catchAsync(async (req, res, next) => {
-  const eventType = req.body.eventType; // Assuming event type is provided in the request body
+  const eventType = req.body.eventType;
   const user = req.user;
 
   if (!eventType) {

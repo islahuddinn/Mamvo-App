@@ -94,7 +94,6 @@
 const axios = require("axios");
 const { URL } = require("url");
 const Event = require("../Models/eventModel");
-const dotenv = require("dotenv");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
   const apiLink = process.env.API_BASE_URL;
