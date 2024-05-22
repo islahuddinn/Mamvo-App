@@ -151,18 +151,18 @@ const eventSchema = new mongoose.Schema(
     //   enum: ["Todo", "Electronica", "Commercial", "Regue"],
     //   required: true,
     // },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+    // createdBy: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User",
+    // },
   },
   { timestamps: true }
 );
-eventSchema.pre([/^find/, "save"], function (next) {
-  this.populate({
-    path: "createdBy",
-  });
-  next();
-});
+// eventSchema.pre([/^find/, "save"], function (next) {
+//   this.populate({
+//     path: "createdBy",
+//   });
+//   next();
+// });
 const Event = mongoose.model("Event", eventSchema);
 module.exports = Event;

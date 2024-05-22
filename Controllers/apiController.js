@@ -63,6 +63,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       // params,
     });
     const responseData = response.data;
+    console.log("badoo badee", responseData);
 
     // Log the actual response to understand the structure
     console.log("API Response:", JSON.stringify(responseData, null, 2));
@@ -106,7 +107,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
         longitude: event.location.longitude,
         timezone: event.location.timezone,
       },
-      createdBy: req.user ? req.user._id : null,
+      // createdBy: req.user ? req.user._id : null,
     }));
 
     // Insert events into the database
