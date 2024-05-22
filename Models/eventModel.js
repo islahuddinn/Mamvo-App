@@ -53,6 +53,9 @@ const eventSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    eventId: {
+      type: String,
+    },
     slug: {
       type: String,
       required: true,
@@ -143,11 +146,11 @@ const eventSchema = new mongoose.Schema(
         required: true,
       },
     },
-    eventType: {
-      type: String,
-      enum: ["Todo", "Electronica", "Commercial", "Regue"],
-      required: true,
-    },
+    // eventType: {
+    //   type: String,
+    //   enum: ["Todo", "Electronica", "Commercial", "Regue"],
+    //   required: true,
+    // },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

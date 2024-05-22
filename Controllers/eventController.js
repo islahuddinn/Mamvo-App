@@ -185,8 +185,6 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
     ambiences,
     music_genres,
     artists,
-    organization_id,
-    location_id,
     location,
     eventType,
   } = req.body;
@@ -218,8 +216,6 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
     eventToUpdate.ambiences = ambiences;
     eventToUpdate.music_genres = music_genres;
     eventToUpdate.artists = artists;
-    eventToUpdate.organization_id = organization_id;
-    eventToUpdate.location_id = location_id;
     eventToUpdate.location = location;
     eventToUpdate.eventType = eventType;
 
@@ -397,12 +393,12 @@ exports.calculateAndUpdateCashback = catchAsync(async (eventId, referrerId) => {
       $inc: { walletBalance: cashbackAmount },
     });
 
-    // Save the cashback information in the Referral model
-    // await Referral.create({
-    //   referrer: referrerId,
-    //   event: eventId,
-    //   walletBalance,
-    // });
+    ////Save the cashback information in the Referral model
+    await Referral.create({
+      referrer: referrerId,
+      event: eventId,
+      walletBalance,
+    });
   } catch (error) {
     console.error("Error calculating and updating cashback:", error);
   }
@@ -453,18 +449,18 @@ exports.bookEvent = catchAsync(async (req, res, next) => {
           },
         });
         // Confirm the payment intent to complete the payment
-        const confirmedPaymentIntent = await stripe.paymentIntents.confirm(
-          paymentIntent.id,
-          {
-            payment_method: "pm_card_visa",
-            return_url: "https://www.example.com",
-          }
-        );
+        // const confirmedPaymentIntent = await stripe.paymentIntents.confirm(
+        //   paymentIntent.id,
+        //   {
+        //     payment_method: "pm_card_visa",
+        //     return_url: "https://www.example.com",
+        //   }
+        // );
         return res.status(200).json({
           success: true,
           status: 200,
           message: "Event booked successfully.",
-          data: { user, paymentIntent: confirmedPaymentIntent },
+          data: { user, paymentIntent: paymentIntent.id },
         });
       }
     }
@@ -479,18 +475,18 @@ exports.bookEvent = catchAsync(async (req, res, next) => {
       });
     }
     // Confirm the payment intent to complete the payment
-    const confirmedPaymentIntent = await stripe.paymentIntents.confirm(
-      paymentIntent.id,
-      {
-        payment_method: "pm_card_visa",
-        return_url: "https://www.example.com",
-      }
-    );
+    // const confirmedPaymentIntent = await stripe.paymentIntents.confirm(
+    //   paymentIntent.id,
+    //   {
+    //     payment_method: "pm_card_visa",
+    //     return_url: "https://www.example.com",
+    //   }
+    // );
     return res.status(200).json({
       success: true,
       status: 200,
       message: "Event booked successfully.",
-      data: { user, paymentIntent: confirmedPaymentIntent },
+      data: { user, paymentIntent: paymentIntent.id },
     });
   } catch (error) {
     // Handle any errors

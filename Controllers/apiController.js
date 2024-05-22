@@ -3,6 +3,7 @@ const { URL } = require("url");
 const Event = require("../Models/eventModel");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
+  console.log("END POINT HITTED");
   const apiLink = process.env.API_BASE_URL;
   const apiKey = process.env.API_KEY;
 
@@ -37,13 +38,13 @@ exports.fetchDataFromAPI = async (req, res, next) => {
   }
 
   // Extract and set query parameters
-  const params = {
-    organization_id: req.query.organization_id,
-    start_date: req.query.start_date || "",
-    end_date: req.query.end_date || "",
-    limit: req.query.limit || 50,
-    offset: req.query.offset || 0,
-  };
+  // const params = {
+  //   organization_id: req.query.organization_id,
+  //   start_date: req.query.start_date || "",
+  //   end_date: req.query.end_date || "",
+  //   limit: req.query.limit || 50,
+  //   offset: req.query.offset || 0,
+  // };
 
   const headers = {
     "X-Api-Key": apiKey,
@@ -59,7 +60,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     console.log("Fetching data from API:", apiLink);
     const response = await axios.get(parsedUrl.origin + parsedUrl.pathname, {
       headers,
-      params,
+      // params,
     });
     const responseData = response.data;
 
@@ -80,6 +81,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
 
     const events = data.map((event) => ({
       name: event.name,
+      eventId: event._id,
       slug: event.slug,
       description: event.description || "",
       display_date: new Date(event.display_date),
@@ -93,9 +95,9 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       music_genres: event.music_genres || [],
       artists: event.artists || [],
       organization_id: event.organization_id,
-      location_id: event.location_id,
+      // location_id: event.location_id,
       location: {
-        _id: event.location._id,
+        // _id: event.location._id,
         address: event.location.address,
         city: event.location.city,
         country: event.location.country,
@@ -104,7 +106,6 @@ exports.fetchDataFromAPI = async (req, res, next) => {
         longitude: event.location.longitude,
         timezone: event.location.timezone,
       },
-      eventType: "Todo",
       createdBy: req.user ? req.user._id : null,
     }));
 
