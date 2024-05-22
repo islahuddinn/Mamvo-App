@@ -7,7 +7,6 @@ const AppError = require("../Utils/appError");
 const { loginChecks } = require("../Utils/login-checks");
 const jwt = require("jsonwebtoken");
 const Email = require("../Utils/mailSend");
-// const { findOneAndUpdate, findOne, startSession } = require("../models/");
 const RefreshToken = require("../Models/refreshTokenModel");
 const generateOtp = require("../Utils/otpGenerator");
 // const cron = require("node-cron");
@@ -473,13 +472,13 @@ exports.login = catchAsync(async (req, res, next) => {
     { _id: user._id },
     {
       deviceToken: req.body.device && req.body.device.id,
-      location: location || defaultLocation, // If location is not provided, set default location
+      location: location || defaultLocation,
     }
   );
 
   // Update user object with location
   user.location = location || defaultLocation;
-
+  res.act = loginChecks(user);
   // Create and send token for user authentication
   creatSendToken(user, 200, "Logged In Successfully", res, req.body.device);
 });
@@ -538,20 +537,20 @@ exports.protect = catchAsync(async (req, res, next) => {
 // //================= Authorization=============
 // //Restrict who can delete tour
 
-// exports.restrictTo = (...roles) => {
-//   return (req, res, next) => {
-//     console.log(req.user.name, roles);
-//     if (!roles.includes(req.user.role)) {
-//       return res.status(403).send({
-//         status: 403,
-//         success: false,
-//         message: "You do not have permission to perform this action",
-//         data: {},
-//       });
-//     }
-//     next();
-//   };
-// };
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    console.log(req.user.name, roles);
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).send({
+        status: 403,
+        success: false,
+        message: "You do not have permission to perform this action",
+        data: {},
+      });
+    }
+    next();
+  };
+};
 
 // // =================================================================================
 
@@ -643,10 +642,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   }
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-
-  // if (user.role === "guardian" && !user.isGuardianActive) {
-  //   user.isGuardianActive = true;
-  // }
 
   await user.save({ validateBeforeSave: false });
 

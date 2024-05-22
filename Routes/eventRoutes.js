@@ -23,12 +23,12 @@ router
   .route("/:id")
   .get(eventController.getOneEvent)
   .patch(
-    // authController.protect,
+    authController.protect,
     // authController.restrictTo("admin"),
     eventController.updateEvent
   )
   .delete(
-    // authController.protect,
+    authController.protect,
     // authController.restrictTo("admin"),
     eventController.deleteEvent
   );

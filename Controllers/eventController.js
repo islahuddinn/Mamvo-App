@@ -2,6 +2,7 @@ const catchAsync = require("../Utils/catchAsync");
 const Event = require("../Models/eventModel");
 const User = require("../Models/userModel");
 const factory = require("./handleFactory");
+const Notification = require("../Models/notificationModel");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const {
   SendNotification,
@@ -171,16 +172,23 @@ exports.getAllEventLocations = catchAsync(async (req, res, next) => {
 
 exports.updateEvent = catchAsync(async (req, res, next) => {
   const {
-    title,
+    name,
+    slug,
     description,
-    eventType,
-    location,
-    image,
-    price,
-    eventInfo,
+    display_date,
+    start_date,
+    end_date,
+    code,
     age,
-    date,
-    duration,
+    image_url,
+    outfit,
+    ambiences,
+    music_genres,
+    artists,
+    organization_id,
+    location_id,
+    location,
+    eventType,
   } = req.body;
 
   const eventId = req.params.id;
@@ -195,40 +203,54 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
         message: "Event not found",
       });
     }
-    eventToUpdate.title = title;
+
+    // Update event fields
+    eventToUpdate.name = name;
+    eventToUpdate.slug = slug;
     eventToUpdate.description = description;
-    eventToUpdate.eventType = eventType;
-    eventToUpdate.location = location;
-    eventToUpdate.image = image;
-    eventToUpdate.price = price;
-    eventToUpdate.eventInfo = eventInfo;
+    eventToUpdate.display_date = display_date;
+    eventToUpdate.start_date = start_date;
+    eventToUpdate.end_date = end_date;
+    eventToUpdate.code = code;
     eventToUpdate.age = age;
-    eventToUpdate.date = date;
-    eventToUpdate.duration = duration;
+    eventToUpdate.image_url = image_url;
+    eventToUpdate.outfit = outfit;
+    eventToUpdate.ambiences = ambiences;
+    eventToUpdate.music_genres = music_genres;
+    eventToUpdate.artists = artists;
+    eventToUpdate.organization_id = organization_id;
+    eventToUpdate.location_id = location_id;
+    eventToUpdate.location = location;
+    eventToUpdate.eventType = eventType;
 
     const updatedEvent = await eventToUpdate.save();
 
     ////// Send Notification
     const data = {
-      eventTitle: req.body.title,
-      eventInfo: req.body.eventInfo,
-      eventLocation: req.body.eventLocation,
+      eventTitle: name,
+      eventInfo: description,
+      eventLocation: location.full_address,
     };
     const notificationTitle = "Event Updated";
     const notificationBody = "The event has been updated.";
-    // const deviceToken = req.body.FCMToken;
     const devices = await User.find({}, "deviceToken");
-    console.log(devices);
     const FCMTokens = devices.map((device) => device.deviceToken);
-    console.log(FCMTokens);
 
-    if (!FCMTokens) {
+    if (!FCMTokens.length) {
       return res.status(404).json({
         success: false,
         status: 404,
         message: "FCMTokens not found...",
       });
     }
+
+    await Notification.create({
+      title: notificationTitle,
+      body: notificationBody,
+      sender: req.user.id,
+      multireceiver: FCMTokens,
+      data: data,
+    });
 
     try {
       await SendNotificationMultiCast({
@@ -239,7 +261,7 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
       });
       console.log("Notification sent to all users.");
     } catch (error) {
-      console.error("Error sending notification.....:", error);
+      console.error("Error sending notification:", error);
     }
 
     res.status(200).json({
@@ -254,68 +276,68 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
 });
 
 ////// Delete Event By Id
-exports.deleteEvent = catchAsync(async (req, res, next) => {
-  const eventId = req.params.id;
-  console.log(eventId);
-  try {
-    const eventToDelete = await Event.findById(eventId);
-    console.log(eventToDelete);
-    if (!eventToDelete) {
-      return res.status(404).json({
-        success: false,
-        status: 404,
-        message: "Event not found...",
-      });
-    }
+// exports.deleteEvent = catchAsync(async (req, res, next) => {
+//   const eventId = req.params.id;
+//   console.log(eventId);
+//   try {
+//     const eventToDelete = await Event.findById(eventId);
+//     console.log(eventToDelete);
+//     if (!eventToDelete) {
+//       return res.status(404).json({
+//         success: false,
+//         status: 404,
+//         message: "Event not found...",
+//       });
+//     }
 
-    // const eventTitle = eventToDelete.title;
+//     // const eventTitle = eventToDelete.title;
 
-    await eventToDelete.deleteOne();
+//     await eventToDelete.deleteOne();
 
-    ////// Send Notification
-    const data = {
-      eventTitle: eventToDelete.title,
-      eventInfo: eventToDelete.eventInfo,
-      eventLocation: eventToDelete.eventLocation,
-    };
-    const notificationTitle = "Event Deleted";
-    const notificationBody = "The event  has been deleted successfully.";
+//     ////// Send Notification
+//     const data = {
+//       eventTitle: eventToDelete.title,
+//       eventInfo: eventToDelete.eventInfo,
+//       eventLocation: eventToDelete.eventLocation,
+//     };
+//     const notificationTitle = "Event Deleted";
+//     const notificationBody = "The event  has been deleted successfully.";
 
-    // const deviceToken = req.body.FCMToken;
-    const devices = await User.find({}, "deviceToken");
-    console.log(devices);
-    const FCMTokens = devices.map((device) => device.deviceToken);
-    console.log(FCMTokens);
+//     // const deviceToken = req.body.FCMToken;
+//     const devices = await User.find({}, "deviceToken");
+//     console.log(devices);
+//     const FCMTokens = devices.map((device) => device.deviceToken);
+//     console.log(FCMTokens);
 
-    if (!FCMTokens) {
-      return res.status(404).json({
-        success: false,
-        status: 404,
-        message: "FCMTokens not found...",
-      });
-    }
+//     if (!FCMTokens) {
+//       return res.status(404).json({
+//         success: false,
+//         status: 404,
+//         message: "FCMTokens not found...",
+//       });
+//     }
 
-    try {
-      await SendNotificationMultiCast({
-        tokens: FCMTokens,
-        title: notificationTitle,
-        body: notificationBody,
-        data: data,
-      });
-      console.log("Notification sent to all users.");
-    } catch (error) {
-      console.error("Error sending notification.....:", error);
-    }
+//     try {
+//       await SendNotificationMultiCast({
+//         tokens: FCMTokens,
+//         title: notificationTitle,
+//         body: notificationBody,
+//         data: data,
+//       });
+//       console.log("Notification sent to all users.");
+//     } catch (error) {
+//       console.error("Error sending notification.....:", error);
+//     }
 
-    res.status(204).json({
-      success: true,
-      status: 204,
-      message: "Event deleted successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+//     res.status(204).json({
+//       success: true,
+//       status: 204,
+//       message: "Event deleted successfully",
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 exports.shareEvent = catchAsync(async (req, res, next) => {
   const user = req.user;
@@ -482,6 +504,6 @@ exports.bookEvent = catchAsync(async (req, res, next) => {
 });
 
 //// function to cancel the book event
-
 exports.getallEvent = factory.getAll(Event);
 exports.getOneEvent = factory.getOne(Event);
+exports.deleteEvent = factory.deleteOne(Event);
