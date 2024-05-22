@@ -108,10 +108,10 @@ const eventSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    location_id: {
-      type: String,
-      required: true,
-    },
+    // location_id: {
+    //   type: String,
+    //   required: true,
+    // },
     location: {
       // _id: {
       //   type: String,
