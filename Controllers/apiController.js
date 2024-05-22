@@ -16,12 +16,12 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     console.error(
       "API_BASE_URL or API_KEY is not set in environment variables"
     );
-    return res.status(500).json({
-      status: 500,
-      success: false,
-      message: "Internal server error: Missing API configuration",
-      data: {},
-    });
+    // return res.status(500).json({
+    //   status: 500,
+    //   success: false,
+    //   message: "Internal server error: Missing API configuration",
+    //   data: {},
+    // });
   }
 
   let parsedUrl;
@@ -29,12 +29,12 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     parsedUrl = new URL(apiLink);
   } catch (error) {
     console.error("Invalid API link:", apiLink, error.message);
-    return res.status(400).json({
-      status: 400,
-      success: false,
-      message: "Invalid API link",
-      data: {},
-    });
+    // return res.status(400).json({
+    //   status: 400,
+    //   success: false,
+    //   message: "Invalid API link",
+    //   data: {},
+    // });
   }
 
   // Extract and set query parameters
@@ -72,12 +72,12 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     const data = responseData.data;
     if (!Array.isArray(data)) {
       console.error("API response is not an array:", data);
-      return res.status(500).json({
-        status: 500,
-        success: false,
-        message: "Unexpected API response format",
-        data: { apiData: responseData },
-      });
+      // return res.status(500).json({
+      //   status: 500,
+      //   success: false,
+      //   message: "Unexpected API response format",
+      //   data: { apiData: responseData },
+      // });
     }
 
     const events = data.map((event) => ({
@@ -113,33 +113,33 @@ exports.fetchDataFromAPI = async (req, res, next) => {
     // Insert events into the database
     await Event.insertMany(events);
 
-    res.status(200).json({
-      status: 200,
-      success: true,
-      message: "Data fetched and saved successfully",
-      data: responseData,
-    });
+    // res.status(200).json({
+    //   status: 200,
+    //   success: true,
+    //   message: "Data fetched and saved successfully",
+    //   data: responseData,
+    // });
   } catch (error) {
     console.error(
       "Error fetching data from API:",
       error.message,
       error.response?.data || ""
     );
-    if (error.response && error.response.status === 401) {
-      return res.status(401).json({
-        status: 401,
-        success: false,
-        message:
-          "Unauthorized: Check your API key or authentication credentials",
-        data: {},
-      });
-    } else {
-      return res.status(500).json({
-        status: 500,
-        success: false,
-        message: "Internal server error",
-        data: {},
-      });
-    }
+    // if (error.response && error.response.status === 401) {
+    //   return res.status(401).json({
+    //     status: 401,
+    //     success: false,
+    //     message:
+    //       "Unauthorized: Check your API key or authentication credentials",
+    //     data: {},
+    //   });
+    // } else {
+    //   return res.status(500).json({
+    //     status: 500,
+    //     success: false,
+    //     message: "Internal server error",
+    //     data: {},
+    //   });
+    // }
   }
 };
