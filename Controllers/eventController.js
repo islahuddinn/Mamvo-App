@@ -240,13 +240,13 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
       });
     }
 
-    await Notification.create({
-      title: notificationTitle,
-      body: notificationBody,
-      sender: req.user.id,
-      multireceiver: FCMTokens,
-      data: data,
-    });
+    // await Notification.create({
+    //   title: notificationTitle,
+    //   body: notificationBody,
+    //   sender: req.user.id,
+    //   multireceiver: FCMTokens,
+    //   data: data,
+    // });
 
     try {
       await SendNotificationMultiCast({

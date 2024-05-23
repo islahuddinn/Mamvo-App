@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const cron = require("node-cron");
-const { fetchDataFromAPI } = require("./Controllers/apiController");
-
+// require("./Utils/cronJob");
 let server;
 
 process.on("uncaughtException", (err) => {
@@ -39,9 +37,4 @@ process.on("unhandledRejection", (err) => {
   } else {
     process.exit(1);
   }
-});
-
-cron.schedule("* * * * *", async () => {
-  console.log("CRON JOB IS ACTIVE");
-  await fetchDataFromAPI();
 });
