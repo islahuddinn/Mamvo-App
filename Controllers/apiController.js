@@ -464,7 +464,7 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
     });
 
     //////Insert event ticket prices into the database
-    await EventTicketPrice.insertMany(data);
+    await EventTicketPrice.insertMany(validatedTickets);
 
     res.status(200).json({
       status: 200,
