@@ -386,83 +386,83 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
       });
     }
 
-    // Filter out events that are already in the database
-    const existingEventIds = await EventTicketPrice.find(
-      {},
-      "event_id"
-    ).distinct("event_id");
-    const newEventTicketPrices = data.filter(
-      (ticket) => !existingEventIds.includes(ticket.event_id)
-    );
+    // // Filter out events that are already in the database
+    // const existingEventIds = await EventTicketPrice.find(
+    //   {},
+    //   "event_id"
+    // ).distinct("event_id");
+    // const newEventTicketPrices = data.filter(
+    //   (ticket) => !existingEventIds.includes(ticket.event_id)
+    // );
 
-    if (!newEventTicketPrices.length) {
-      console.log("No new event tickets to insert.");
-      return res.status(200).json({
-        status: 200,
-        success: true,
-        message: "No new event tickets to insert",
-        data: [],
-      });
-    }
+    // if (!newEventTicketPrices.length) {
+    //   console.log("No new event tickets to insert.");
+    //   return res.status(200).json({
+    //     status: 200,
+    //     success: true,
+    //     message: "No new event tickets to insert",
+    //     data: [],
+    //   });
+    // }
 
-    // Validate each ticket before inserting
-    const validatedTickets = newEventTicketPrices.map((ticket) => {
-      return {
-        _id: ticket._id || new mongoose.Types.ObjectId(),
-        organization_id: ticket.organization_id || "",
-        event_id: ticket.event_id || "",
-        name: ticket.name || "",
-        slug: ticket.slug || "",
-        valid_from: ticket.valid_from
-          ? new Date(ticket.valid_from)
-          : new Date(),
-        complete: ticket.complete || false,
-        type: ticket.type || "",
-        show_all_prices: ticket.show_all_prices || false,
-        prices: Array.isArray(ticket.prices)
-          ? ticket.prices.map((price) => ({
-              _id: price._id || new mongoose.Types.ObjectId(),
-              name: price.name || "",
-              price: price.price || 0,
-              valid_until: price.valid_until
-                ? new Date(price.valid_until)
-                : new Date(),
-              quantity: price.quantity || 0,
-              fee_type: price.fee_type || "",
-              fee_quantity: price.fee_quantity || 0,
-              includes: price.includes || "",
-              additional_info: price.additional_info || "",
-            }))
-          : [],
-        supplements: Array.isArray(ticket.supplements)
-          ? ticket.supplements
-          : [],
-        available: ticket.available || false,
-        current_price: ticket.current_price
-          ? {
-              _id: ticket.current_price._id || new mongoose.Types.ObjectId(),
-              name: ticket.current_price.name || "",
-              price: ticket.current_price.price || 0,
-              valid_until: ticket.current_price.valid_until
-                ? new Date(ticket.current_price.valid_until)
-                : new Date(),
-              quantity: ticket.current_price.quantity || 0,
-              fee_type: ticket.current_price.fee_type || "",
-              fee_quantity: ticket.current_price.fee_quantity || 0,
-              includes: ticket.current_price.includes || "",
-              additional_info: ticket.current_price.additional_info || "",
-            }
-          : null,
-        warranty: ticket.warranty || { enabled: false },
-        availability: ticket.availability || { sold: 0, available: 0 },
-        min: ticket.min || 1,
-        max: ticket.max || 1,
-        questions: Array.isArray(ticket.questions) ? ticket.questions : [],
-      };
-    });
+    // // Validate each ticket before inserting
+    // const validatedTickets = newEventTicketPrices.map((ticket) => {
+    //   return {
+    //     _id: ticket._id || new mongoose.Types.ObjectId(),
+    //     organization_id: ticket.organization_id || "",
+    //     event_id: ticket.event_id || "",
+    //     name: ticket.name || "",
+    //     slug: ticket.slug || "",
+    //     valid_from: ticket.valid_from
+    //       ? new Date(ticket.valid_from)
+    //       : new Date(),
+    //     complete: ticket.complete || false,
+    //     type: ticket.type || "",
+    //     show_all_prices: ticket.show_all_prices || false,
+    //     prices: Array.isArray(ticket.prices)
+    //       ? ticket.prices.map((price) => ({
+    //           _id: price._id || new mongoose.Types.ObjectId(),
+    //           name: price.name || "",
+    //           price: price.price || 0,
+    //           valid_until: price.valid_until
+    //             ? new Date(price.valid_until)
+    //             : new Date(),
+    //           quantity: price.quantity || 0,
+    //           fee_type: price.fee_type || "",
+    //           fee_quantity: price.fee_quantity || 0,
+    //           includes: price.includes || "",
+    //           additional_info: price.additional_info || "",
+    //         }))
+    //       : [],
+    //     supplements: Array.isArray(ticket.supplements)
+    //       ? ticket.supplements
+    //       : [],
+    //     available: ticket.available || false,
+    //     current_price: ticket.current_price
+    //       ? {
+    //           _id: ticket.current_price._id || new mongoose.Types.ObjectId(),
+    //           name: ticket.current_price.name || "",
+    //           price: ticket.current_price.price || 0,
+    //           valid_until: ticket.current_price.valid_until
+    //             ? new Date(ticket.current_price.valid_until)
+    //             : new Date(),
+    //           quantity: ticket.current_price.quantity || 0,
+    //           fee_type: ticket.current_price.fee_type || "",
+    //           fee_quantity: ticket.current_price.fee_quantity || 0,
+    //           includes: ticket.current_price.includes || "",
+    //           additional_info: ticket.current_price.additional_info || "",
+    //         }
+    //       : null,
+    //     warranty: ticket.warranty || { enabled: false },
+    //     availability: ticket.availability || { sold: 0, available: 0 },
+    //     min: ticket.min || 1,
+    //     max: ticket.max || 1,
+    //     questions: Array.isArray(ticket.questions) ? ticket.questions : [],
+    //   };
+    // });
 
     // Insert event ticket prices into the database
-    await EventTicketPrice.insertMany(validatedTickets);
+    // await EventTicketPrice.insertMany(data);
 
     res.status(200).json({
       status: 200,
