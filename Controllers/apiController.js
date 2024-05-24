@@ -317,7 +317,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
 
 exports.fetchEventTicketsFromAPI = async (req, res, next) => {
   console.log("END POINT HITTED for tickets ");
-  const apiLink = process.env.API_BASE_URL;
+  const apiLink = process.env.API_BASE_URL2;
   const apiKey = process.env.API_KEY;
 
   // Log environment variables for debugging
