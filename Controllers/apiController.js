@@ -385,6 +385,8 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
         data: { apiData: responseData },
       });
     }
+    console.log(data, "data g");
+    console.log(responseData, "data g in responseData format");
 
     // // Filter out events that are already in the database
     // const existingEventIds = await EventTicketPrice.find(
