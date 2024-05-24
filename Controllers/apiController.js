@@ -387,15 +387,60 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
     }
 
     // Filter out events that are already in the database
-    const existingEvents = await EventTicketPrice.find({}, "event_id");
-    const existingEventIds = existingEvents.map((event) => event.event_id);
-
+    const existingEventIds = await EventTicketPrice.find(
+      {},
+      "event_id"
+    ).distinct("event_id");
     const newEventTicketPrices = data.filter(
       (ticket) => !existingEventIds.includes(ticket.event_id)
     );
 
+    // Validate each ticket before inserting
+    const validatedTickets = newEventTicketPrices.map((ticket) => {
+      return {
+        _id: ticket._id || new mongoose.Types.ObjectId(),
+        organization_id: ticket.organization_id,
+        event_id: ticket.event_id,
+        name: ticket.name,
+        slug: ticket.slug,
+        valid_from: new Date(ticket.valid_from),
+        complete: ticket.complete || false,
+        type: ticket.type,
+        show_all_prices: ticket.show_all_prices || false,
+        prices: ticket.prices.map((price) => ({
+          _id: price._id || new mongoose.Types.ObjectId(),
+          name: price.name,
+          price: price.price,
+          valid_until: new Date(price.valid_until),
+          quantity: price.quantity,
+          fee_type: price.fee_type,
+          fee_quantity: price.fee_quantity,
+          includes: price.includes,
+          additional_info: price.additional_info,
+        })),
+        supplements: ticket.supplements || [],
+        available: ticket.available || false,
+        current_price: {
+          _id: ticket.current_price._id || new mongoose.Types.ObjectId(),
+          name: ticket.current_price.name,
+          price: ticket.current_price.price,
+          valid_until: new Date(ticket.current_price.valid_until),
+          quantity: ticket.current_price.quantity,
+          fee_type: ticket.current_price.fee_type,
+          fee_quantity: ticket.current_price.fee_quantity,
+          includes: ticket.current_price.includes,
+          additional_info: ticket.current_price.additional_info,
+        },
+        warranty: ticket.warranty || { enabled: false },
+        availability: ticket.availability || { sold: 0, available: 0 },
+        min: ticket.min || 1,
+        max: ticket.max || 1,
+        questions: ticket.questions || [],
+      };
+    });
+
     // Insert event ticket prices into the database
-    await EventTicketPrice.insertMany(newEventTicketPrices);
+    await EventTicketPrice.insertMany(validatedTickets);
 
     res.status(200).json({
       status: 200,
