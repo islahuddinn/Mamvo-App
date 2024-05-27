@@ -3,7 +3,10 @@ const Event = require("../Models/eventModel");
 const {
   sendPushNotification,
 } = require("../Controllers/pushNotificationController");
-const { fetchDataFromAPI } = require("../Controllers/apiController");
+const {
+  fetchDataFromAPI,
+  fetchEventTicketsFromAPI,
+} = require("../Controllers/apiController");
 
 // const { sendPushNotification } = require("./Utils/pushNotification");
 const User = require("../Models/userModel");
@@ -11,6 +14,7 @@ const User = require("../Models/userModel");
 cron.schedule("* * * * *", async () => {
   console.log("PUSH NOTIFICATION AND API CRON JOB IS ACTIVE");
   await fetchDataFromAPI();
+  await fetchEventTicketsFromAPI();
   try {
     // Fetch new events that have not been notified
     const newEvents = await Event.find({ notified: false });

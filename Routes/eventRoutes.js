@@ -15,6 +15,7 @@ router.post(
 );
 
 router.get("/", eventController.getallEvent);
+router.get("/event-tickets", eventController.getallEventTickets);
 // router.get("/get-events", apiController.fetchDataFromAPI);
 router.get("/get-events-tickets", apiController.fetchEventTicketsFromAPI);
 router.get("/getEventByType", eventController.getEventByType);
