@@ -316,7 +316,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
 // };
 
 exports.fetchEventTicketsFromAPI = async (req, res, next) => {
-  console.log("END POINT HITTED for tickets ");
+  console.log("END POINT HITTED for tickets");
   const apiLink = process.env.API_BASE_URL2;
   const apiKey = process.env.API_KEY;
 
@@ -400,60 +400,64 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
     }
 
     // Validate each ticket before inserting
-    const validatedTickets = newEventTicketPrices.map((ticket) => {
-      return {
-        _id: ticket._id || new mongoose.Types.ObjectId(),
-        organization_id: ticket.organization_id || "",
-        event_id: ticket.event_id || "",
-        name: ticket.name || "",
-        slug: ticket.slug || "",
-        valid_from: ticket.valid_from
-          ? new Date(ticket.valid_from)
-          : new Date(),
-        complete: ticket.complete || false,
-        type: ticket.type || "",
-        show_all_prices: ticket.show_all_prices || false,
-        prices: Array.isArray(ticket.prices)
-          ? ticket.prices.map((price) => ({
-              _id: price._id || new mongoose.Types.ObjectId(),
-              name: price.name || "",
-              price: price.price || 0,
-              valid_until: price.valid_until
-                ? new Date(price.valid_until)
-                : new Date(),
-              quantity: price.quantity || 0,
-              fee_type: price.fee_type || "",
-              fee_quantity: price.fee_quantity || 0,
-              includes: price.includes || "",
-              additional_info: price.additional_info || "",
-            }))
-          : [],
-        supplements: Array.isArray(ticket.supplements)
-          ? ticket.supplements
-          : [],
-        available: ticket.available || false,
-        current_price: ticket.current_price
-          ? {
-              _id: ticket.current_price._id || new mongoose.Types.ObjectId(),
-              name: ticket.current_price.name || "",
-              price: ticket.current_price.price || 0,
-              valid_until: ticket.current_price.valid_until
-                ? new Date(ticket.current_price.valid_until)
-                : new Date(),
-              quantity: ticket.current_price.quantity || 0,
-              fee_type: ticket.current_price.fee_type || "",
-              fee_quantity: ticket.current_price.fee_quantity || 0,
-              includes: ticket.current_price.includes || "",
-              additional_info: ticket.current_price.additional_info || "",
-            }
-          : null,
-        warranty: ticket.warranty || { enabled: false },
-        availability: ticket.availability || { sold: 0, available: 0 },
-        min: ticket.min || 1,
-        max: ticket.max || 1,
-        questions: Array.isArray(ticket.questions) ? ticket.questions : [],
-      };
-    });
+    const validatedTickets = newEventTicketPrices.map((ticket) => ({
+      _id: mongoose.isValidObjectId(ticket._id)
+        ? ticket._id
+        : new mongoose.Types.ObjectId(),
+      organization_id: ticket.organization_id || "",
+      event_id: ticket.event_id || "",
+      name: ticket.name || "",
+      slug: ticket.slug || "",
+      valid_from: ticket.valid_from ? new Date(ticket.valid_from) : new Date(),
+      complete: ticket.complete || false,
+      type: ticket.type || "",
+      show_all_prices: ticket.show_all_prices || false,
+      prices: Array.isArray(ticket.prices)
+        ? ticket.prices.map((price) => ({
+            _id: mongoose.isValidObjectId(price._id)
+              ? price._id
+              : new mongoose.Types.ObjectId(),
+            name: price.name || "",
+            price: price.price || 0,
+            valid_until: price.valid_until
+              ? new Date(price.valid_until)
+              : new Date(),
+            quantity: price.quantity || 0,
+            fee_type: price.fee_type || "",
+            fee_quantity: price.fee_quantity || 0,
+            includes: price.includes || "",
+            additional_info: price.additional_info || "",
+          }))
+        : [],
+      supplements: Array.isArray(ticket.supplements) ? ticket.supplements : [],
+      available: ticket.available || false,
+      current_price: ticket.current_price
+        ? {
+            _id: mongoose.isValidObjectId(ticket.current_price._id)
+              ? ticket.current_price._id
+              : new mongoose.Types.ObjectId(),
+            name: ticket.current_price.name || "",
+            price: ticket.current_price.price || 0,
+            valid_until: ticket.current_price.valid_until
+              ? new Date(ticket.current_price.valid_until)
+              : new Date(),
+            quantity: ticket.current_price.quantity || 0,
+            fee_type: ticket.current_price.fee_type || "",
+            fee_quantity: ticket.current_price.fee_quantity || 0,
+            includes: ticket.current_price.includes || "",
+            additional_info: ticket.current_price.additional_info || "",
+          }
+        : null,
+      warranty: {
+        enabled: ticket.warranty?.enabled || false,
+        hours: ticket.warranty?.hours || 0, // Default value for hours
+        percentage: ticket.warranty?.percentage || 0, // Default value for percentage
+      },
+      availability: ticket.availability || { sold: 0, available: 0 },
+      min: ticket.min || 1,
+      max: ticket.max || 1,
+      questions: Array.isArray(ticket.questions) ? ticket.questions : [],
+    }));
 
     // Log validated tickets before insertion
     console.log(
