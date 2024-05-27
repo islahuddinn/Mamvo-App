@@ -2,6 +2,7 @@ const axios = require("axios");
 const { URL } = require("url");
 const Event = require("../Models/eventModel");
 const EventTicketPrice = require("../Models/ticketsModel");
+const mongoose = require("mongoose");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
   console.log("END POINT HITTED");
