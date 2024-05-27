@@ -351,18 +351,13 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
   }
 
   // Extract and set query parameters
-  const params = {
-    event_id: req.query.event_id,
-  };
+  const params = { event_id: req.query.event_id };
 
   const headers = {
     "X-Api-Key": apiKey,
     "Content-Type": "application/json",
-    "User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+    "User-Agent": "Mozilla/5.0",
     Accept: "application/json",
-    "Accept-Language": "en-US,en;q=0.9",
-    Connection: "keep-alive",
   };
 
   try {
@@ -385,14 +380,11 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
         data: { apiData: responseData },
       });
     }
-    console.log(data, "data g");
-    console.log(responseData, "data g in responseData format");
 
-    // // Filter out events that are already in the database
-    const existingEventIds = await EventTicketPrice.find(
-      {},
+    // Filter out eventTickets that are already in the database
+    const existingEventIds = await EventTicketPrice.find({}).distinct(
       "event_id"
-    ).distinct("event_id");
+    );
     const newEventTicketPrices = data.filter(
       (ticket) => !existingEventIds.includes(ticket.event_id)
     );
@@ -463,7 +455,13 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
       };
     });
 
-    //////Insert event ticket prices into the database
+    // Log validated tickets before insertion
+    console.log(
+      "Validated Tickets:",
+      JSON.stringify(validatedTickets, null, 2)
+    );
+
+    // Insert event ticket prices into the database
     await EventTicketPrice.insertMany(validatedTickets);
 
     res.status(200).json({
