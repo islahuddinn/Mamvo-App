@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const Event = require("../Models/eventModel");
+const Notification = require("../Models/notificationModel");
 const {
   sendPushNotification,
 } = require("../Controllers/pushNotificationController");

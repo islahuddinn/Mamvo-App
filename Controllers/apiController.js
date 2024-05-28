@@ -160,8 +160,8 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
   const apiKey = process.env.API_KEY;
 
   // Log environment variables for debugging
-  console.log("API Base URL:", apiLink);
-  console.log("API Key:", apiKey);
+  // console.log("API Base URL:", apiLink);
+  // console.log("API Key:", apiKey);
 
   // Check if environment variables are properly set
   if (!apiLink || !apiKey) {
@@ -311,7 +311,7 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
       status: 200,
       success: true,
       message: "Data fetched and saved successfully",
-      data: responseData,
+      data: validatedTickets,
     });
   } catch (error) {
     console.error(
