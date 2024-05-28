@@ -5,7 +5,7 @@ const EventTicketPrice = require("../Models/ticketsModel");
 const mongoose = require("mongoose");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
-  console.log("END POINT HITTED");
+  console.log("END POINT HITTED for events");
   const apiLink = process.env.API_BASE_URL;
   const apiKey = process.env.API_KEY;
 

@@ -384,7 +384,7 @@ exports.shareEvent = catchAsync(async (req, res, next) => {
 });
 
 ///// Function to calculate and update cashback for the referral/Affiliate
-exports.calculateAndUpdateCashback = catchAsync(async (eventId, referrerId) => {
+exports.calculateAndUpdateCashback = async (eventId, referrerId) => {
   console.log("function being called");
   try {
     const eventPrice = await EventTickets.findById(eventId);
@@ -404,11 +404,11 @@ exports.calculateAndUpdateCashback = catchAsync(async (eventId, referrerId) => {
   } catch (error) {
     console.error("Error calculating and updating cashback:", error);
   }
-});
+};
 
 //////// handle event booking with referral link
 
-exports.bookEvent = catchAsync(async (req, res, next) => {
+exports.bookEvent = async (req, res, next) => {
   console.log("Endpoint hitted");
   const { eventId, userId } = req.body;
   const CashUpdate = this.calculateAndUpdateCashback;
@@ -468,7 +468,7 @@ exports.bookEvent = catchAsync(async (req, res, next) => {
 
         // Proceed with Stripe payment integration
         paymentIntent = await stripe.paymentIntents.create({
-          amount: eventTicket.current_price.price * 100, // Set your desired amount in cents
+          amount: eventTicket.current_price.price * 100,
           currency: "usd",
           description: "Event Booking",
           automatic_payment_methods: {
@@ -532,102 +532,7 @@ exports.bookEvent = catchAsync(async (req, res, next) => {
       error: error.message,
     });
   }
-});
-
-// exports.bookEvent = catchAsync(async (req, res, next) => {
-//   console.log("Endpoint hitted");
-//   const { eventId, userId } = req.body;
-//   const CashUpdate = this.calculateAndUpdateCashback;
-
-//   try {
-//     // Check if the user exists
-//     const user = await User.findById(userId);
-//     // const event = await Event.findById(eventId);
-//     // console.log(event, "Here is the required event");
-//     if (!user) {
-//       return res.status(404).json({
-//         success: false,
-//         status: 404,
-//         message: "User or event not found.",
-//       });
-//     }
-//     console.log(eventId, "Event with ticket found");
-
-//     // Check if the user is a PR user
-//     if (user.isPRUser) {
-//       return res.status(400).json({
-//         success: false,
-//         status: 400,
-//         message: "Public Relation users are not allowed to book events.",
-//       });
-//     }
-
-//     // Fetch event ticket price based on eventId
-//     const eventTicket = await EventTickets.findOne({ event_id: eventId });
-//     console.log(eventTicket, "Event tickets successfully fetched");
-//     if (!eventTicket || !eventTicket.current_price) {
-//       return res.status(404).json({
-//         success: false,
-//         status: 404,
-//         message: "Event ticket or current price not found.",
-//       });
-//     }
-
-//     let paymentIntent;
-
-//     // Check if the user has a referral code and it's valid
-//     if (user.referralCode) {
-//       const referrer = await User.findOne({ referralCode: user.referralCode });
-//       if (referrer) {
-//         // Update cashback for the referrer
-//         await CashUpdate(eventId, referrer._id);
-
-//         // Proceed with Stripe payment integration
-//         paymentIntent = await stripe.paymentIntents.create({
-//           amount: eventTicket.current_price.price * 100, // Set your desired amount in cents
-//           currency: "usd",
-//           description: "Event Booking",
-//           automatic_payment_methods: {
-//             enabled: true,
-//           },
-//         });
-
-//         return res.status(200).json({
-//           success: true,
-//           status: 200,
-//           message: "Event booked successfully.",
-//           data: { user, paymentIntent: paymentIntent.id },
-//         });
-//       }
-//     }
-
-//     // If no referral code or it's invalid, proceed with Stripe payment integration
-//     if (!paymentIntent) {
-//       paymentIntent = await stripe.paymentIntents.create({
-//         amount: eventTicket.current_price.price * 100, // Set your desired amount in cents
-//         currency: "usd",
-//         description: "Event Booking",
-//         automatic_payment_methods: { enabled: true },
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       status: 200,
-//       message: "Event booked successfully.",
-//       data: { eventTicket, user, paymentIntent: paymentIntent.id },
-//     });
-//   } catch (error) {
-//     console.error("Error booking event:", error);
-//     return res.status(500).json({
-//       success: false,
-//       status: 500,
-//       message: "Internal server error.",
-//       error: error.message,
-//     });
-//   }
-// });
-
+};
 //// function to cancel the book event
 exports.getallEvent = factory.getAll(Event);
 exports.getallEventTickets = factory.getAll(EventTickets);

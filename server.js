@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-// require("./Utils/cronJob");
+require("./Utils/cronJob");
 let server;
 
 process.on("uncaughtException", (err) => {

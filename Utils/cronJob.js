@@ -35,6 +35,12 @@ cron.schedule("* * * * *", async () => {
           // Update the event to mark it as notified
           event.notified = true;
           await event.save();
+          await Notification.create({
+            title: title,
+            sender: req.user._id,
+            reciever: users,
+            data: newEvents,
+          });
         }
       } else {
         console.log("No FCM tokens found.");
