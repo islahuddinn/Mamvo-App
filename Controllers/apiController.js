@@ -342,7 +342,7 @@ exports.fetchEventTicketsRateFromAPI = async (req, res, next) => {
 ///////fetching data from apis for tickets
 
 exports.fetchTicketsDataFromAPI = async (req, res, next) => {
-  console.log("END POINT HITTED for Tickets");
+  console.log("END POINT HITTED for events");
   const apiLink = process.env.TICKET_API_BASE_URL;
   const apiKey = process.env.API_KEY;
 
@@ -376,10 +376,20 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
     });
   }
 
-  const params = {};
-  if (req.query.event_id) params.event_id = req.query.event_id;
-  if (req.query.ticket_rate_id)
-    params.ticket_rate_id = req.query.ticket_rate_id;
+  // Ensure both event_id and ticket_rate_id are present in the query parameters
+  if (!req.query.event_id || !req.query.ticket_rate_id) {
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      message: "Missing required query parameters: event_id and ticket_rate_id",
+      data: {},
+    });
+  }
+
+  const params = {
+    event_id: req.query.event_id,
+    ticket_rate_id: req.query.ticket_rate_id,
+  };
 
   const headers = {
     "X-Api-Key": apiKey,
@@ -414,12 +424,20 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
       });
     }
 
-    const existingTickets = await Ticket.find({}, "event_id");
-    const existingEventIds = existingTickets.map((ticket) => ticket.event_id);
+    // Fetch existing tickets from the database
+    const existingTickets = await Ticket.find({}, "event_id ticket_rate_id");
+    const existingTicketIdentifiers = new Set(
+      existingTickets.map(
+        (ticket) => `${ticket.event_id}-${ticket.ticket_rate_id}`
+      )
+    );
 
     // Filter out tickets that are already in the database
     const newTickets = data.filter(
-      (ticket) => !existingEventIds.includes(ticket.event_id)
+      (ticket) =>
+        !existingTicketIdentifiers.has(
+          `${ticket.event_id}-${ticket.ticket_rate_id}`
+        )
     );
 
     const tickets = newTickets.map((ticket) => ({
@@ -502,6 +520,13 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
         message:
           "Unauthorized: Check your API key or authentication credentials",
         data: {},
+      });
+    } else if (error.response && error.response.status === 400) {
+      return res.status(400).json({
+        status: 400,
+        success: false,
+        message: "Bad request: Check your query parameters",
+        data: error.response.data,
       });
     } else {
       return res.status(500).json({
