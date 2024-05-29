@@ -1,12 +1,13 @@
 const axios = require("axios");
 const { URL } = require("url");
 const Event = require("../Models/eventModel");
-const EventTicketPrice = require("../Models/ticketsModel");
+const EventTicketPrice = require("../Models/ticketsRateModel");
 const mongoose = require("mongoose");
+const Ticket = require("../Models/ticketModel");
 
 exports.fetchDataFromAPI = async (req, res, next) => {
   console.log("END POINT HITTED for events");
-  const apiLink = process.env.API_BASE_URL;
+  const apiLink = process.env.EVENT_API_BASE_URL;
   const apiKey = process.env.API_KEY;
 
   // Log environment variables for debugging
@@ -154,9 +155,9 @@ exports.fetchDataFromAPI = async (req, res, next) => {
   }
 };
 
-exports.fetchEventTicketsFromAPI = async (req, res, next) => {
-  console.log("END POINT HITTED for tickets");
-  const apiLink = process.env.API_BASE_URL2;
+exports.fetchEventTicketsRateFromAPI = async (req, res, next) => {
+  console.log("END POINT HITTED for tickets Rates");
+  const apiLink = process.env.TICKET_RATE_API_BASE_URL;
   const apiKey = process.env.API_KEY;
 
   // Log environment variables for debugging
@@ -312,6 +313,178 @@ exports.fetchEventTicketsFromAPI = async (req, res, next) => {
       success: true,
       message: "Data fetched and saved successfully",
       data: validatedTickets,
+    });
+  } catch (error) {
+    console.error(
+      "Error fetching data from API:",
+      error.message,
+      error.response?.data || ""
+    );
+    if (error.response && error.response.status === 401) {
+      return res.status(401).json({
+        status: 401,
+        success: false,
+        message:
+          "Unauthorized: Check your API key or authentication credentials",
+        data: {},
+      });
+    } else {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal server error",
+        data: {},
+      });
+    }
+  }
+};
+
+///////fetching data from apis for tickets
+
+exports.fetchTicketsDataFromAPI = async (req, res, next) => {
+  console.log("END POINT HITTED for events");
+  const apiLink = process.env.TICKET_API_BASE_URL;
+  const apiKey = process.env.API_KEY;
+
+  // Log environment variables for debugging
+  console.log("API Base URL:", apiLink);
+  console.log("API Key:", apiKey);
+
+  // Check if environment variables are properly set
+  if (!apiLink || !apiKey) {
+    console.error(
+      "API_BASE_URL or API_KEY is not set in environment variables"
+    );
+    return res.status(500).json({
+      status: 500,
+      success: false,
+      message: "Internal server error: Missing API configuration",
+      data: {},
+    });
+  }
+
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(apiLink);
+  } catch (error) {
+    console.error("Invalid API link:", apiLink, error.message);
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      message: "Invalid API link",
+      data: {},
+    });
+  }
+  const params = req.query.event_id && req.query.ticket_rate_id;
+  const headers = {
+    "X-Api-Key": apiKey,
+    "Content-Type": "application/json",
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+    Accept: "application/json",
+    "Accept-Language": "en-US,en;q=0.9",
+    Connection: "keep-alive",
+  };
+
+  try {
+    console.log("Fetching data from API:", apiLink);
+    const response = await axios.get(parsedUrl.origin + parsedUrl.pathname, {
+      headers,
+      params,
+    });
+    const responseData = response.data;
+
+    // Log the actual response to understand the structure
+    console.log("API Response:", JSON.stringify(responseData, null, 2));
+
+    // Validate the data before inserting into the database
+    const data = responseData.data;
+    console.log(data, "Get Ticket API data");
+    if (!Array.isArray(data)) {
+      console.error("API response is not an array:", data);
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Unexpected API response format",
+        data: { apiData: responseData },
+      });
+    }
+
+    const existingTickets = await Ticket.find({}, "event_id");
+    const existingEventIds = existingTickets.map((ticket) => ticket.event_id);
+
+    // Filter out tickets that are already in the database
+    const newTickets = data.filter(
+      (ticket) => !existingEventIds.includes(ticket.event_id)
+    );
+    console.log(newTickets, "the filtered tickets data");
+
+    const tickets = newTickets.map((ticket) => ({
+      event_id: ticket.event_id,
+      ticket_rate_id: ticket.ticket_rate_id,
+      qr_code: ticket.qr_code,
+      status: ticket.status,
+      price: {
+        _id: ticket.price._id,
+        name: ticket.price.name,
+        price: ticket.price.price,
+        valid_until: new Date(ticket.price.valid_until),
+        quantity: ticket.price.quantity,
+        fee_type: ticket.price.fee_type,
+        fee_quantity: ticket.price.fee_quantity,
+        includes: ticket.price.includes,
+        additional_info: ticket.price.additional_info,
+      },
+      channel_id: ticket.channel_id,
+      fees: {
+        organization: ticket.fees.organization,
+        discocil: ticket.fees.discocil,
+      },
+      full_name: ticket.full_name,
+      phone: ticket.phone,
+      email: ticket.email,
+      gender: ticket.gender,
+      birthday: new Date(ticket.birthday),
+      address: ticket.address,
+      postal_code: ticket.postal_code,
+      country_code: ticket.country_code,
+      personal_document_type: ticket.personal_document_type,
+      personal_document_number: ticket.personal_document_number,
+      answers: ticket.answers.map((answer) => ({
+        question_id: answer.question_id,
+        answer: answer.answer,
+      })),
+      supplements: ticket.supplements.map((supplement) => ({
+        supplement_id: supplement.supplement_id,
+        price: supplement.price,
+      })),
+      refunded: ticket.refunded,
+      refunded_at: ticket.refunded_at ? new Date(ticket.refunded_at) : null,
+      refunds: ticket.refunds.map((refund) => ({
+        channel_id: refund.channel_id,
+        amount: refund.amount,
+        at: new Date(refund.at),
+      })),
+      for: ticket.for,
+      enter: ticket.enter,
+      entry_time: ticket.entry_time ? new Date(ticket.entry_time) : null,
+      total_supplements: ticket.total_supplements,
+      total_fees: ticket.total_fees,
+      total_price: ticket.total_price,
+      warranty: {
+        total: ticket.warranty.total,
+        hours: ticket.warranty.hours,
+      },
+    }));
+
+    // Insert tickets into the database
+    await Ticket.insertMany(tickets);
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: "Data fetched and saved successfully",
+      data: responseData,
     });
   } catch (error) {
     console.error(
