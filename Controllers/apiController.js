@@ -342,7 +342,7 @@ exports.fetchEventTicketsRateFromAPI = async (req, res, next) => {
 ///////fetching data from apis for tickets
 
 exports.fetchTicketsDataFromAPI = async (req, res, next) => {
-  console.log("END POINT HITTED for events");
+  console.log("END POINT HITTED for Tickets");
   const apiLink = process.env.TICKET_API_BASE_URL;
   const apiKey = process.env.API_KEY;
 
@@ -375,7 +375,12 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
       data: {},
     });
   }
-  const params = req.query.event_id && req.query.ticket_rate_id;
+
+  const params = {};
+  if (req.query.event_id) params.event_id = req.query.event_id;
+  if (req.query.ticket_rate_id)
+    params.ticket_rate_id = req.query.ticket_rate_id;
+
   const headers = {
     "X-Api-Key": apiKey,
     "Content-Type": "application/json",
@@ -399,7 +404,6 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
 
     // Validate the data before inserting into the database
     const data = responseData.data;
-    console.log(data, "Get Ticket API data");
     if (!Array.isArray(data)) {
       console.error("API response is not an array:", data);
       return res.status(500).json({
@@ -417,7 +421,6 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
     const newTickets = data.filter(
       (ticket) => !existingEventIds.includes(ticket.event_id)
     );
-    console.log(newTickets, "the filtered tickets data");
 
     const tickets = newTickets.map((ticket) => ({
       event_id: ticket.event_id,
