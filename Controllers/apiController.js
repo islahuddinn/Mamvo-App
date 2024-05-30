@@ -342,7 +342,7 @@ exports.fetchEventTicketsRateFromAPI = async (req, res, next) => {
 ///////fetching data from apis for tickets
 
 exports.fetchTicketsDataFromAPI = async (req, res, next) => {
-  console.log("END POINT HITTED for events");
+  console.log("END POINT HITTED for events tickets data");
   const apiLink = process.env.PURCHASE_TICKET_API_BASE_URL;
   const apiKey = process.env.API_KEY;
 
@@ -377,7 +377,7 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
   }
 
   // Ensure both event_id and ticket_rate_id are present in the query parameters
-  const { tarifa_id, cantidat } = req.query;
+  const { event_id, ticket_rate_id } = req.query;
 
   if (!event_id && !ticket_rate_id) {
     return res.status(400).json({
