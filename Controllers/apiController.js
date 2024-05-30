@@ -589,7 +589,7 @@ exports.fetchPriceDataFromAPI = async (req, res, next) => {
 
   // Extract and set query parameters
   const params = {
-    tarifa_id: req.query.List_id || "",
+    tarifa_id: req.query.tarifa_id || "",
     cantidad: req.query.cantidad || "",
   };
 
