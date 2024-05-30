@@ -551,7 +551,7 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
 };
 
 ///// Fetching data for buying tickets
-exports.fetchDataFromAPI = async (req, res, next) => {
+exports.fetchPriceDataFromAPI = async (req, res, next) => {
   console.log("END POINT HITTED for buying tickets");
   const apiLink = process.env.PURCHASE_TICKET_API_BASE_URL;
   const apiKey = process.env.API_KEY;
@@ -609,7 +609,7 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       params,
     });
     const responseData = response.data;
-    console.log("badoo badee", responseData);
+    console.log("badoo badee prices", responseData);
 
     // Log the actual response to understand the structure
     console.log("API Response:", JSON.stringify(responseData, null, 2));
@@ -625,13 +625,13 @@ exports.fetchDataFromAPI = async (req, res, next) => {
       //   data: { apiData: responseData },
       // });
     }
-    const existingEvents = await Event.find({}, "eventId");
-    const existingEventIds = existingEvents.map((event) => event.eventId);
+    // const existingEvents = await Event.find({}, "eventId");
+    // const existingEventIds = existingEvents.map((event) => event.eventId);
 
-    // Filter out events that are already in the database
-    const newEvents = data.filter(
-      (event) => !existingEventIds.includes(event._id)
-    );
+    // // Filter out events that are already in the database
+    // const newEvents = data.filter(
+    //   (event) => !existingEventIds.includes(event._id)
+    // );
 
     // const events = newEvents.map((event) => ({
     //   name: event.name,
