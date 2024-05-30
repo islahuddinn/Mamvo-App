@@ -551,6 +551,7 @@ exports.fetchTicketsDataFromAPI = async (req, res, next) => {
 };
 
 ///// Fetching data for buying tickets
+
 exports.fetchPriceDataFromAPI = async (req, res, next) => {
   console.log("END POINT HITTED for buying tickets");
   const apiLink = process.env.PURCHASE_TICKET_API_BASE_URL;
@@ -600,7 +601,6 @@ exports.fetchPriceDataFromAPI = async (req, res, next) => {
     Accept: "application/json",
     "Accept-Language": "en-US,en;q=0.9",
     Connection: "keep-alive",
-    Authorization: `Bearer ${apiKey}`, // Add Authorization header
   };
 
   try {
@@ -632,21 +632,44 @@ exports.fetchPriceDataFromAPI = async (req, res, next) => {
       error.message,
       error.response?.data || ""
     );
-    if (error.response && error.response.status === 401) {
-      return res.status(401).json({
-        status: 401,
-        success: false,
-        message:
-          "Unauthorized: Check your API key or authentication credentials",
-        data: {},
-      });
-    } else if (error.response && error.response.status === 403) {
-      return res.status(403).json({
-        status: 403,
-        success: false,
-        message: "Forbidden: Ensure auth data is correct and you have access",
-        data: error.response.data,
-      });
+
+    if (error.response) {
+      // Log full error response for debugging
+      console.error("Full error response:", error.response.data);
+
+      if (error.response.status === 401) {
+        return res.status(401).json({
+          status: 401,
+          success: false,
+          message:
+            "Unauthorized: Check your API key or authentication credentials",
+          data: {},
+        });
+      } else if (error.response.status === 403) {
+        return res.status(403).json({
+          status: 403,
+          success: false,
+          message: "Forbidden: Ensure auth data is correct and you have access",
+          data: error.response.data,
+        });
+      } else if (
+        error.response.status === 400 &&
+        error.response.data === "Invalid token"
+      ) {
+        return res.status(400).json({
+          status: 400,
+          success: false,
+          message: "Invalid token: Ensure your API key is correct",
+          data: error.response.data,
+        });
+      } else {
+        return res.status(500).json({
+          status: 500,
+          success: false,
+          message: "Internal server error",
+          data: {},
+        });
+      }
     } else {
       return res.status(500).json({
         status: 500,
