@@ -18,7 +18,7 @@ router.get("/", eventController.getallEvent);
 router.get("/event-tickets", eventController.getallEventTickets);
 router.get("/get-events", apiController.fetchDataFromAPI); //// geting all events
 router.get("/get-events-tickets", apiController.fetchTicketsDataFromAPI); /////// Geting tickets data its not functional
-router.get("/get-events-tickets", apiController.fetchPriceDataFromAPI); ///////buying tickets
+router.get("/buy-events-tickets", apiController.fetchPriceDataFromAPI); ///////buying tickets
 router.get("/getEventByType", eventController.getEventByType);
 router.get("/getAllEventLocations", eventController.getAllEventLocations);
 
