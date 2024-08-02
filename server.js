@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const startCronJob = require('./Utils/CronJobv2')
 // require("./Utils/cronJob");
 let server;
 
@@ -27,6 +28,9 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`app is running on port ${port}`);
 });
+
+startCronJob()
+
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION! shutting down...");
   console.log(err.name, err.message);
@@ -38,3 +42,5 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   }
 });
+
+

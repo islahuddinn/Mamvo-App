@@ -41,7 +41,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
     new: true,
   });
-
+  updatedUser.isProfileCompleted = true
+  await updatedUser.save()
   res.status(200).json({
     status: 200,
     success: true,

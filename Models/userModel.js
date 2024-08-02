@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema(
     },
     referralCode: {
       type: String,
-      unique: true,
+      //unique: true,
     },
     walletBalance: {
       type: Number,
@@ -76,6 +76,10 @@ const userSchema = new mongoose.Schema(
     verified: {
       type: Boolean,
       default: false,
+    },
+    isProfileCompleted:{
+      type: Boolean,
+      default: false
     },
     customerId: String,
   },

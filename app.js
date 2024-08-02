@@ -8,6 +8,7 @@ const helmet = require("helmet");
 const xss = require("xss-clean");
 const path = require("path");
 const setupRoutesV1 = require("./Routes/routes");
+const setupRoutesV2 = require('./Routes/routesv2')
 
 // const privacyRoutes = require("./routes/privacyPolicyRoutes");
 // const termsandconditionRoutes = require("./routes/termsAndConditionRoutes");
@@ -72,6 +73,7 @@ app.get("/", (req, res) => {
   res.status(200).render("base");
 });
 app.use("/api/v1", setupRoutesV1());
+app.use("/api/v2", setupRoutesV2())
 // app.use("/privacy", privacyRoutes);
 // app.use("/termsandcondition", termsandconditionRoutes);
 
