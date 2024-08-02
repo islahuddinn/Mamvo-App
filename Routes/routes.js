@@ -5,6 +5,7 @@ const privacyRoutes = require("./privacyPolicyRoute");
 const termsandconditionRoutes = require("./termsAndConditionRoute");
 const subscriptionRoutes = require("./subscriptionRoutes");
 const organizationRoutes = require('./organizationRoutes')
+const ticketRateRoutes = require('./ticketRateRoutes')
 
 
 const setupRoutesV1 = () => {
@@ -15,6 +16,7 @@ const setupRoutesV1 = () => {
   router.use("/termsandcondition", termsandconditionRoutes);
   router.use("/subscription", subscriptionRoutes);
   router.use('/organizations', organizationRoutes)
+  router.use('/ticket-rates', ticketRateRoutes)
 
   return router;
 };
