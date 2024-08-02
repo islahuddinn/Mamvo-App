@@ -4,7 +4,8 @@ const eventRoutes = require("./eventRoutes");
 const privacyRoutes = require("./privacyPolicyRoute");
 const termsandconditionRoutes = require("./termsAndConditionRoute");
 const subscriptionRoutes = require("./subscriptionRoutes");
-const eventRoutesv2 = require('./eventRoutesv2')
+const organizationRoutes = require('./organizationRoutes')
+
 
 const setupRoutesV1 = () => {
   const router = express.Router();
@@ -13,6 +14,7 @@ const setupRoutesV1 = () => {
   router.use("/privacy", privacyRoutes);
   router.use("/termsandcondition", termsandconditionRoutes);
   router.use("/subscription", subscriptionRoutes);
+  router.use('/organizations', organizationRoutes)
 
   return router;
 };

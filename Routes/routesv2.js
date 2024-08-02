@@ -6,6 +6,7 @@ const setupRoutesV2 = () => {
   const router = express.Router();
   
   router.use("/events", eventRoutesv2);
+  
 
   
   return router;
