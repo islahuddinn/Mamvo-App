@@ -1,9 +1,11 @@
 const axios = require("axios");
 const Event = require("../Models/eventModelv2");
 const TicketRate = require("../Models/ticketRateModelv2");
-const deepEqual = require('deep-equal');
+const Organization = require("../Models/organizationModel");
+const deepEqual = require("deep-equal");
 
-const API_KEY = "sk_test_2jRIs1i0WWS6WwqCSgGe66oQEQUSmU06I2q06I6SsWkMYGOs2skKUIMusG2uUYwgasYSIKUCkKM2WmqC2COKsesYWeoKYCESWYkG";
+const API_KEY =
+  "sk_test_2jRIs1i0WWS6WwqCSgGe66oQEQUSmU06I2q06I6SsWkMYGOs2skKUIMusG2uUYwgasYSIKUCkKM2WmqC2COKsesYWeoKYCESWYkG";
 
 function cleanObject(obj) {
   const { _id, __v, ...cleanedObj } = obj;
@@ -26,11 +28,13 @@ async function fetchAndStoreEvents() {
     for (const event of events) {
       const existingEvent = await Event.findOne({ eventId: event._id }).lean();
 
-      const cleanedExistingEvent = existingEvent ? cleanObject(existingEvent) : null;
-      console.log("CLEANED:::::::::::", cleanedExistingEvent)
+      const cleanedExistingEvent = existingEvent
+        ? cleanObject(existingEvent)
+        : null;
+      console.log("CLEANED:::::::::::", cleanedExistingEvent);
 
       if (!existingEvent || !deepEqual(cleanedExistingEvent, event)) {
-        console.log("CHANGES IN EVENT FOUND. UPDATING IN DATABASE!!!!")
+        console.log("CHANGES IN EVENT FOUND. UPDATING IN DATABASE!!!!");
         await Event.updateOne(
           { eventId: event._id },
           {
@@ -83,9 +87,13 @@ async function fetchAndStoreTicketRates(eventId) {
     console.log("TICKET RATES IS:", ticketRates);
 
     for (const rate of ticketRates) {
-      const existingRate = await TicketRate.findOne({ ticketRateId: rate._id }).lean();
+      const existingRate = await TicketRate.findOne({
+        ticketRateId: rate._id,
+      }).lean();
 
-      const cleanedExistingRate = existingRate ? cleanObject(existingRate) : null;
+      const cleanedExistingRate = existingRate
+        ? cleanObject(existingRate)
+        : null;
 
       if (!existingRate || !deepEqual(cleanedExistingRate, rate)) {
         console.log("CHANGES IN TICKET RATE FOUND. UPDATING IN DATABASE!!!!");
@@ -101,7 +109,7 @@ async function fetchAndStoreTicketRates(eventId) {
             complete: rate.complete,
             type: rate.type,
             show_all_prices: rate.show_all_prices,
-            prices: rate.prices.map(price => ({
+            prices: rate.prices.map((price) => ({
               priceId: price._id,
               name: price.name,
               price: price.price,
@@ -110,12 +118,12 @@ async function fetchAndStoreTicketRates(eventId) {
               fee_quantity: price.fee_quantity,
               includes: price.includes,
               additional_info: price.additional_info,
-              quantity: price.quantity
+              quantity: price.quantity,
             })),
-            supplements: rate.supplements.map(supplement => ({
+            supplements: rate.supplements.map((supplement) => ({
               supplementId: supplement._id,
               label: supplement.label,
-              price: supplement.price
+              price: supplement.price,
             })),
             warranty: rate.warranty,
             available: rate.available,
@@ -128,19 +136,19 @@ async function fetchAndStoreTicketRates(eventId) {
               fee_quantity: rate.current_price.fee_quantity,
               includes: rate.current_price.includes,
               additional_info: rate.current_price.additional_info,
-              quantity: rate.current_price.quantity
+              quantity: rate.current_price.quantity,
             },
             availability: rate.availability,
             min: rate.min,
             max: rate.max,
             fields: rate.fields,
-            questions: rate.questions.map(question => ({
+            questions: rate.questions.map((question) => ({
               questionId: question._id,
               label: question.label,
               type: question.type,
               required: question.required,
-              items: question.items
-            }))
+              items: question.items,
+            })),
           },
           { upsert: true }
         );
@@ -160,6 +168,51 @@ async function fetchAndStoreTicketRates(eventId) {
   }
 }
 
+async function fetchAndStoreOrganizations() {
+  try {
+    const response = await axios.get(
+      "https://channels-service-alpha.fourvenues.com/organizations",
+      {
+        headers: {
+          "X-Api-Key": API_KEY,
+        },
+      }
+    );
+
+    const organizations = response.data.data;
+
+    console.log("ORGANIZATIONS ARE::::::", organizations)
+
+    for (const org of organizations) {
+      const existingOrg = await Organization.findOne({
+        organizationId: org._id,
+      }).lean();
+
+      const cleanedExistingOrg = existingOrg ? cleanObject(existingOrg) : null;
+
+      if (!existingOrg || !deepEqual(cleanedExistingOrg, org)) {
+        console.log("CHANGES IN ORGS FOUND!!!. UPDATING IN DATABASE!!!!");
+        await Organization.updateOne(
+          { organizationId: org._id },
+          {
+            organizationId: org._id,
+            name: org.name,
+            slug: org.slug,
+          },
+          { upsert: true }
+        );
+      } else {
+        console.log("NO CHANGES IN ORG FOUND");
+      }
+    }
+
+    
+  } catch (err) {
+    console.log("ERROR WHILE FETCHING AND STORING ORGANIZATIONS:", err);
+  }
+}
+
 module.exports = {
   fetchAndStoreEvents,
+  fetchAndStoreOrganizations
 };
