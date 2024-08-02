@@ -2,6 +2,7 @@ const TicketRate = require('../Models/ticketRateModelv2')
 const Event = require('../Models/eventModelv2')
 const catchAsync = require('../Utils/catchAsync')
 const AppError = require('../Utils/appError')
+const axios = require('axios')
 
 
 
@@ -49,4 +50,36 @@ exports.getOneTicketRate = catchAsync(async(req,res,next)=>{
         message:"Ticket Rate fetched successfully",
         ticketRate
     })
+})
+
+
+
+exports.getTicketRatePricingInfo = catchAsync(async(req,res,next)=>{
+    const {ticketRateId} = req.params
+    const {quantity} = req.query
+
+    if(!ticketRateId || !quantity){
+        return next(new AppError("Please selecth the both ticket rate and quantity",400))
+    }
+
+    const response = await axios.get(`https://channels-service-alpha.fourvenues.com/ticket-rates/${ticketRateId}/pricing-info?quantity=${quantity}`, {
+        headers: {
+            "X-Api-Key": process.env.API_KEY,
+          },
+    })
+
+    const pricingInfo = response.data.data
+
+
+    if(!pricingInfo){
+        return next(new CustomError("No Pricing Info found for this ticket rate.", 404))
+    }
+
+    res.status(200).json({
+        status:"success",
+        statusCode:200,
+        message:"Pricing Info fetched successfully",
+        pricingInfo
+    })
+
 })
