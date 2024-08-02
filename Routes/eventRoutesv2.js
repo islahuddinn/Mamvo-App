@@ -9,6 +9,8 @@ const router = express.Router()
 
 router.get('/', eventController.getAllEvents)
 
+router.get('/get-one-event/:eventId', eventController.getOneEvent)
+
 
 
 
