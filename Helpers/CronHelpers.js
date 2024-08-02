@@ -26,15 +26,15 @@ async function fetchAndStoreEvents() {
     console.log("EVENTS IS:", events);
 
     for (const event of events) {
-      const existingEvent = await Event.findOne({ eventId: event._id }).lean();
+    //   const existingEvent = await Event.findOne({ eventId: event._id }).lean();
 
-      const cleanedExistingEvent = existingEvent
-        ? cleanObject(existingEvent)
-        : null;
-      console.log("CLEANED:::::::::::", cleanedExistingEvent);
+    //   const cleanedExistingEvent = existingEvent
+    //     ? cleanObject(existingEvent)
+    //     : null;
+    //   console.log("CLEANED:::::::::::", cleanedExistingEvent);
 
-      if (!existingEvent || !deepEqual(cleanedExistingEvent, event)) {
-        console.log("CHANGES IN EVENT FOUND. UPDATING IN DATABASE!!!!");
+    //   if (!existingEvent || !deepEqual(cleanedExistingEvent, event)) {
+    //     console.log("CHANGES IN EVENT FOUND. UPDATING IN DATABASE!!!!");
         await Event.updateOne(
           { eventId: event._id },
           {
@@ -60,9 +60,9 @@ async function fetchAndStoreEvents() {
 
         // Fetch and store ticket rates for the event
         await fetchAndStoreTicketRates(event._id);
-      } else {
-        console.log("NO CHANGES FOUND!");
-      }
+    //   } else {
+    //     console.log("NO CHANGES FOUND!");
+    //   }
     }
 
     console.log("Events and ticket rates updated/inserted successfully");
@@ -87,16 +87,16 @@ async function fetchAndStoreTicketRates(eventId) {
     console.log("TICKET RATES IS:", ticketRates);
 
     for (const rate of ticketRates) {
-      const existingRate = await TicketRate.findOne({
-        ticketRateId: rate._id,
-      }).lean();
+    //   const existingRate = await TicketRate.findOne({
+    //     ticketRateId: rate._id,
+    //   }).lean();
 
-      const cleanedExistingRate = existingRate
-        ? cleanObject(existingRate)
-        : null;
+    //   const cleanedExistingRate = existingRate
+    //     ? cleanObject(existingRate)
+    //     : null;
 
-      if (!existingRate || !deepEqual(cleanedExistingRate, rate)) {
-        console.log("CHANGES IN TICKET RATE FOUND. UPDATING IN DATABASE!!!!");
+    //   if (!existingRate || !deepEqual(cleanedExistingRate, rate)) {
+    //     console.log("CHANGES IN TICKET RATE FOUND. UPDATING IN DATABASE!!!!");
         await TicketRate.updateOne(
           { ticketRateId: rate._id },
           {
@@ -152,9 +152,9 @@ async function fetchAndStoreTicketRates(eventId) {
           },
           { upsert: true }
         );
-      } else {
-        console.log("NO CHANGES IN TICKET FOUND");
-      }
+    //   } else {
+    //     console.log("NO CHANGES IN TICKET FOUND");
+    //   }
     }
 
     console.log(
@@ -184,14 +184,14 @@ async function fetchAndStoreOrganizations() {
     console.log("ORGANIZATIONS ARE::::::", organizations)
 
     for (const org of organizations) {
-      const existingOrg = await Organization.findOne({
-        organizationId: org._id,
-      }).lean();
+    //   const existingOrg = await Organization.findOne({
+    //     organizationId: org._id,
+    //   }).lean();
 
-      const cleanedExistingOrg = existingOrg ? cleanObject(existingOrg) : null;
+    //   const cleanedExistingOrg = existingOrg ? cleanObject(existingOrg) : null;
 
-      if (!existingOrg || !deepEqual(cleanedExistingOrg, org)) {
-        console.log("CHANGES IN ORGS FOUND!!!. UPDATING IN DATABASE!!!!");
+    //   if (!existingOrg || !deepEqual(cleanedExistingOrg, org)) {
+    //     console.log("CHANGES IN ORGS FOUND!!!. UPDATING IN DATABASE!!!!");
         await Organization.updateOne(
           { organizationId: org._id },
           {
@@ -201,9 +201,9 @@ async function fetchAndStoreOrganizations() {
           },
           { upsert: true }
         );
-      } else {
-        console.log("NO CHANGES IN ORG FOUND");
-      }
+    //   } else {
+    //     console.log("NO CHANGES IN ORG FOUND");
+    //   }
     }
 
     

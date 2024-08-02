@@ -55,6 +55,7 @@ exports.getOneTicketRate = catchAsync(async(req,res,next)=>{
 
 
 exports.getTicketRatePricingInfo = catchAsync(async(req,res,next)=>{
+    console.log("API HIT FOR PRICING INFO")
     const {ticketRateId} = req.params
     const {quantity} = req.query
 
