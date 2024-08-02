@@ -70,6 +70,7 @@ exports.getTicketRatePricingInfo = catchAsync(async(req,res,next)=>{
 
     const pricingInfo = response.data.data
 
+    console.log("PRICING INFO", pricingInfo)
 
     if(!pricingInfo){
         return next(new CustomError("No Pricing Info found for this ticket rate.", 404))
