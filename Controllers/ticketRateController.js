@@ -30,3 +30,23 @@ exports.getAllTicketRatesOfEvent = catchAsync(async(req,res,next)=>{
         ticketRates
     })
 })
+
+
+exports.getOneTicketRate = catchAsync(async(req,res,next)=>{
+    const {ticketRateId} = req.params
+    if(!ticketRateId){
+        return next(new AppError("Please select the ticket rate that you want to view",400))
+    }
+
+    const ticketRate = await TicketRate.findOne({ticketRateId})
+    if(!ticketRate){
+        return next(new AppError("Ticket rate with this ID doesn't exist.",404))
+    }
+
+    res.status(200).json({
+        status:"success",
+        statusCode:200,
+        message:"Ticket Rate fetched successfully",
+        ticketRate
+    })
+})
