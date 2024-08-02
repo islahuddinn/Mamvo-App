@@ -112,7 +112,7 @@ exports.getAll = (Model, popOptions) =>
     res.json({
       status: 200,
       success: true,
-      results: doc.length,
+      results: doc.data.length,
       data: {
         data: doc.data,
         totalPages: doc.totalPages,
