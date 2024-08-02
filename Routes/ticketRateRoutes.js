@@ -8,7 +8,7 @@ const router = express.Router()
 
 
 router.get('/:eventId', ticketRateController.getAllTicketRatesOfEvent)
-router.get('/get-one-ticket-rate/:ticketRateId', ticketRateController)
+router.get('/get-one-ticket-rate/:ticketRateId', ticketRateController.getOneTicketRate)
 
 
 
