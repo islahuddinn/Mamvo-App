@@ -12,6 +12,8 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
     );
   }
 
+  console.log("HITTING POST REQUEST")
+
   const response = await axios.post(
     "https://channels-service-alpha.fourvenues.com/tickets/checkout",
     {
