@@ -20,7 +20,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
       {
         redirect_url: "http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/success",
         error_url:"http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/fail",
-        send_resourcers: true,
+        //send_resourcers: true,
         metadata:{
           userId: req.user._id
         },
