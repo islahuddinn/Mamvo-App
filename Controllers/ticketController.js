@@ -18,8 +18,8 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
     const response = await axios.post(
       "https://channels-service-alpha.fourvenues.com/tickets/checkout",
       {
-        redirect_url: "http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/success",
-        error_url:"http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/fail",
+        redirect_url: "http://ec2-35-171-3-147.compute-1.amazonaws.com/tickets/success",
+        error_url:"http://ec2-35-171-3-147.compute-1.amazonaws.com/tickets/fail",
         //send_resourcers: true,
         metadata:{
           userId: req.user._id

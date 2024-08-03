@@ -8,8 +8,7 @@ const router = express.Router()
 
 
 router.post('/book-ticket', authController.protect, ticketController.bookTicket)
-
-
+router.get('/success')
 
 
 
