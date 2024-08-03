@@ -34,10 +34,28 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
       }
     );
   
-    const bookings = response.data.data
+    const booking = response.data.data
+
+
   
-    console.log("BOOKINGS ARE:", bookings)
+    if(!booking){
+        return next(new AppError("Error while booking the ticket ",404))
+    }
+
+    res.status(200).json({
+        status:"success",
+        statusCode:200,
+        message:"Please proceed to the payment. You'll receive email of the ticket shortly after the successful payment.",
+        booking
+    })
   } catch (error) {
     console.log("ERROR WHILE BOOKING TICKET:", error)
   }
 });
+
+
+
+
+
+
+
