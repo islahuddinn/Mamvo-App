@@ -6,7 +6,7 @@ const termsandconditionRoutes = require("./termsAndConditionRoute");
 const subscriptionRoutes = require("./subscriptionRoutes");
 const organizationRoutes = require('./organizationRoutes')
 const ticketRateRoutes = require('./ticketRateRoutes')
-
+const ticketRoutes = require('./ticketRoutes')
 
 const setupRoutesV1 = () => {
   const router = express.Router();
@@ -17,6 +17,7 @@ const setupRoutesV1 = () => {
   router.use("/subscription", subscriptionRoutes);
   router.use('/organizations', organizationRoutes)
   router.use('/ticket-rates', ticketRateRoutes)
+  router.use('/tickets', ticketRoutes)
 
   return router;
 };
