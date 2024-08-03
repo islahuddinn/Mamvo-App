@@ -14,26 +14,30 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
 
   console.log("HITTING POST REQUEST")
 
-  const response = await axios.post(
-    "https://channels-service-alpha.fourvenues.com/tickets/checkout",
-    {
-      redirect_url: "http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/success",
-      error_url:"http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/fail",
-      send_resourcers: true,
-      metadata:{
-        userId: req.user._id
+  try {
+    const response = await axios.post(
+      "https://channels-service-alpha.fourvenues.com/tickets/checkout",
+      {
+        redirect_url: "http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/success",
+        error_url:"http://ec2-35-171-3-147.compute-1.amazonaws.com/booking/fail",
+        send_resourcers: true,
+        metadata:{
+          userId: req.user._id
+        },
+        ticket_rate_id,
+        tickets,
       },
-      ticket_rate_id,
-      tickets,
-    },
-    {
-      headers: {
-        "X-Api-Key": process.env.API_KEY,
-      },
-    }
-  );
-
-  const bookings = response.data.data
-
-  console.log("BOOKINGS ARE:", bookings)
+      {
+        headers: {
+          "X-Api-Key": process.env.API_KEY,
+        },
+      }
+    );
+  
+    const bookings = response.data.data
+  
+    console.log("BOOKINGS ARE:", bookings)
+  } catch (error) {
+    console.log("ERROR WHILE BOOKING TICKET:", error)
+  }
 });
