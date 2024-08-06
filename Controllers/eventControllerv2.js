@@ -61,6 +61,7 @@ exports.getUpComingEvents = catchAsync(async (req, res, next) => {
       status: "success",
       statusCode: 200,
       message: "Upcoming Events fetched successfully",
+      length: events.length,
       events,
     });
   } catch (error) {
