@@ -34,7 +34,7 @@ exports.getUpComingEvents = catchAsync(async (req, res, next) => {
       `https://channels-service-alpha.fourvenues.com/events?organization_id=${organization_id}&start_date=${start_date}&end_date=${end_date}&lat=${lat}&lng=${lng}&radius=${radius}&limit=${limit}`,
       {
         headers: {
-          "X-Api-Key": API_KEY,
+          "X-Api-Key": process.env.API_KEY,
         },
       }
     );
