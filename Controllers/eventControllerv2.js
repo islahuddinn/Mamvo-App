@@ -29,29 +29,40 @@ exports.getOneEvent = catchAsync(async (req, res, next) => {
 
 exports.getUpComingEvents = catchAsync(async (req, res, next) => {
   try {
-    const {organization_id, start_date, end_date, lat, lng, radius, limit} = req.query
+    const { organization_id, start_date, end_date, lat, lng, radius, limit } =
+      req.query;
     const response = await axios.get(
-      `https://channels-service-alpha.fourvenues.com/events?organization_id=${organization_id}&start_date=${start_date}&end_date=${end_date}&lat=${lat}&lng=${lng}&radius=${radius}&limit=${limit}`,
+      "https://channels-service-alpha.fourvenues.com/events",
       {
+        params: {
+          organization_id,
+          start_date,
+          end_date,
+          lat,
+          lng,
+          radius,
+          limit,
+        },
         headers: {
           "X-Api-Key": process.env.API_KEY,
         },
       }
     );
 
-    const events = response.data.data
+    const events = response.data.data;
 
-    if(!events){
-        return next(new AppError("Error while fetching the upcoming events",400))
+    if (!events) {
+      return next(
+        new AppError("Error while fetching the upcoming events", 400)
+      );
     }
 
     res.status(200).json({
-        status:"success",
-        statusCode:200,
-        message:"Upcoming Events fetched successfully",
-        events
-    })
-
+      status: "success",
+      statusCode: 200,
+      message: "Upcoming Events fetched successfully",
+      events,
+    });
   } catch (error) {
     console.log("ERROR WHILE FETCHING UPCOMING EVENTS:", error);
   }
