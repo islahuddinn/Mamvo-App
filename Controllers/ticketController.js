@@ -60,7 +60,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
   } catch (error) {
     console.log("ERROR WHILE BOOKING TICKET:", error)
 
-    console.log("DETAIL ERROR", error.response.data.message)
+    console.log("DETAIL ERROR", error.response.data.errors)
   }
 });
 
