@@ -13,9 +13,13 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
   }
 
   console.log("HITTING POST REQUEST")
+  console.log("-----------------------------------------------------------")
+  consolke.log("REQ_BODY IS:", req.body)
 
   console.log("TICKET_RATE_ID_IS:", ticket_rate_id)
   console.log("TICKETS IN BODY IS:", tickets)
+
+  console.log("--------------------------------------------------------")
 
   try {
     const response = await axios.post(
