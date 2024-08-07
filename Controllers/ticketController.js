@@ -17,7 +17,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
   console.log("REQ_BODY IS:", req.body)
 
   console.log("TICKET_RATE_ID_IS:", ticket_rate_id)
-  console.log("TICKETS IN BODY IS:", tickets)
+  console.log("TICKETS IN BODY IS:", tickets[0])
 
   console.log("--------------------------------------------------------")
 
