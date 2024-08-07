@@ -14,6 +14,9 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
 
   console.log("HITTING POST REQUEST")
 
+  console.log("TICKET_RATE_ID_IS:", ticket_rate_id)
+  console.log("TICKETS IN BODY IS:", tickets)
+
   try {
     const response = await axios.post(
       "https://channels-service-alpha.fourvenues.com/tickets/checkout",
@@ -53,7 +56,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
   } catch (error) {
     console.log("ERROR WHILE BOOKING TICKET:", error)
 
-    console.log("DETAIL ERROR", error.data.message)
+    console.log("DETAIL ERROR", error.response.data.message)
   }
 });
 
