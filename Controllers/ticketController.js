@@ -33,6 +33,8 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
         },
       }
     );
+
+    console.log("RESPOONSE IN BOOK TCIKET IS:::::::::::::", response)
   
     const booking = response.data.data
 
