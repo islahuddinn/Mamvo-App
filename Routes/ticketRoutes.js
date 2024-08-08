@@ -7,7 +7,7 @@ const ticketController = require('../Controllers/ticketController')
 const router = express.Router()
 
 
-router.post('/book-ticket', authController.protect, ticketController.bookTicket)
+router.post('/book-ticket',  ticketController.bookTicket)
 router.get('/success')
 
 
