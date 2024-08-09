@@ -17,6 +17,7 @@ exports.getAllEvents = catchAsync(async(req,res,next)=>{
     status:"success",
     statusCode:200,
     message:"Events fetched successfully",
+    length: events.length,
     events
   })
 })
