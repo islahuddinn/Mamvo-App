@@ -33,7 +33,8 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
 
   // Filter events by date range if startDate and endDate are provided
   if (startDate || endDate) {
-    const start = startDate ? new Date(startDate) : new Date('1970-01-01');
+    const currentDate = new Date()
+    const start = startDate ? new Date(startDate) : currentDate;
     const end = endDate ? new Date(endDate) : new Date('2100-12-31');
 
     events = events.filter(event => {
