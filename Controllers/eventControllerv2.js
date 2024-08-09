@@ -32,16 +32,15 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
   }
 
   // Filter events by date range if startDate and endDate are provided
-  if (startDate || endDate) {
-    const currentDate = new Date()
-    const start = startDate ? new Date(startDate) : currentDate;
-    const end = endDate ? new Date(endDate) : new Date('2100-12-31');
+  const currentDate = new Date().setHours(0, 0, 0, 0); // Set to midnight to compare only the date part
+  const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : currentDate;
+  const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : new Date('2100-12-31');
 
-    events = events.filter(event => {
-      const eventStartDate = new Date(event.start_date);
-      return eventStartDate >= start && eventStartDate <= end;
-    });
-  }
+  // Filter events by date range
+  events = events.filter(event => {
+    const eventStartDate = new Date(event.start_date).setHours(0, 0, 0, 0);
+    return eventStartDate >= start && eventStartDate <= end;
+  });
 
   res.status(200).json({
     status: "success",
