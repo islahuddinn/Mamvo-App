@@ -4,7 +4,22 @@ const AppError = require("../Utils/appError");
 const axios = require("axios");
 const factory = require("./handleFactory");
 
-exports.getAllEvents = factory.getAll(Event);
+//exports.getAllEvents = factory.getAll(Event);
+
+exports.getAllEvents = catchAsync(async(req,res,next)=>{
+  const events = await Event.find()
+
+  if(!events){
+    return next(new AppError("Error fetching events",400))
+  }
+
+  res.status(200).json({
+    status:"success",
+    statusCode:200,
+    message:"Events fetched successfully",
+    events
+  })
+})
 
 exports.getOneEvent = catchAsync(async (req, res, next) => {
   const { eventId } = req.params;
