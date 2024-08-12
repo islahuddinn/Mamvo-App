@@ -132,7 +132,7 @@ exports.changeRequestStatus = catchAsync(async (req, res, next) => {
     });
   }else if(status === 'rejected'){
     affiliateRequest.status = 'rejected';
-    affiliateRequest.reviewedBy = req.user._id
+    affiliateRequest.reviewedBy = req.user?._id
     if(!user){
       const newUser = {
         email: affiliateRequest.requestedBy.email
