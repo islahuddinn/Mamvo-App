@@ -84,7 +84,7 @@ exports.changeRequestStatus = catchAsync(async (req, res, next) => {
 
   if (status === "approved") {
     affiliateRequest.status = "approved";
-    affiliateRequest.reviewedBy = req.user._id
+    affiliateRequest.reviewedBy = req.user?._id
   
     let newUser;
 
