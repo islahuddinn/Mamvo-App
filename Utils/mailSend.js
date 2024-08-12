@@ -46,6 +46,16 @@ module.exports = class Email {
     await this.send(`Your OTP is: ${a}`, `Email Verification For Mamvo App`);
   }
 
+  async affiliateConfirmation(a){
+    console.log("sending mail affiliate...");
+    await this.send(`Your password is: ${a}. You can change this password later in the settings. Note: Please do not share this password with anyone.`, `Affiliation with Mamvo App`);
+  }
+
+  async affiliateRejection(){
+    console.log("sending mail affiliate...");
+    await this.send(`Your Request for the affiliate user has been rejected by the admins.`, `Affiliation with Mamvo App`);
+  }
+
   // async sendMamvoWelcome(a) {
   //   console.log("sending mail...");
   //   await this.send(

@@ -19,13 +19,21 @@ const userSchema = new mongoose.Schema(
       //   lowercase: truee,
       validate: [validator.isEmail, "please provide a valid email"],
     },
-    location: {
-      type: {
-        type: String,
-        default: "Point",
+    addressInfo:{
+      location: {
+        type: {
+            type: String,
+            default: "Point"
+        },
+        coordinates: {
+            type: [Number],
+            default: [0.0,0.0]
+        },
+        address: {
+            type: String     
+        }
       },
-      coordinates: { type: [Number], default: [0, 0] },
-      address: String
+
     },
     number: String,
     image: {

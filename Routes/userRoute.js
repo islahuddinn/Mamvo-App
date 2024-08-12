@@ -27,10 +27,13 @@ router.post(
 router.use(authController.protect);
 router.get("/mynotifications", userControler.mynotifications);
 router.post(
-  "/requestAffiliateApproval",
+  "/request-affiliate-approval",
   affiliateControler.requestAffiliateApproval
 );
-router.post("/requestAprroved", affiliateControler.requestApproved);
+
+router.patch('/change-affiliate-status/:affiliateRequestId', affiliateControler.changeRequestStatus)
+router.get('/get-all-affiliate-requests', affiliateControler.getAllAffiliateRequests)
+//router.post("/requestAprroved", affiliateControler.requestApproved);
 // router.post("/handleEventCommission", affiliateControler.calculateCashback);
 router.patch("/updateMyPassword", authController.updatePassword);
 router.post("/logout", authController.logout);
