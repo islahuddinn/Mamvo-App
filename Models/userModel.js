@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema(
         default: "Point",
       },
       coordinates: { type: [Number], default: [0, 0] },
+      address: String
     },
     number: String,
     image: {
