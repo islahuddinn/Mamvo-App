@@ -54,6 +54,7 @@ exports.getAllAffiliateRequests = catchAsync(async (req, res, next) => {
     status: "success",
     statusCode: 200,
     message: "Affiliate Requests fetched successfully",
+    length: affiliateRequests.length,
     affiliateRequests,
   });
 });
