@@ -23,9 +23,6 @@ router.post(
   authController.verifyOtpForResetPassword
 );
 
-// protecting all routes ussing protect midleware
-router.use(authController.protect);
-router.get("/mynotifications", userControler.mynotifications);
 router.post(
   "/request-affiliate-approval",
   affiliateControler.requestAffiliateApproval
@@ -33,6 +30,11 @@ router.post(
 
 router.patch('/change-affiliate-status/:affiliateRequestId', affiliateControler.changeRequestStatus)
 router.get('/get-all-affiliate-requests', affiliateControler.getAllAffiliateRequests)
+
+// protecting all routes ussing protect midleware
+router.use(authController.protect);
+router.get("/mynotifications", userControler.mynotifications);
+
 //router.post("/requestAprroved", affiliateControler.requestApproved);
 // router.post("/handleEventCommission", affiliateControler.calculateCashback);
 router.patch("/updateMyPassword", authController.updatePassword);
