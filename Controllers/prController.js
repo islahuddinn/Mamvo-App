@@ -23,8 +23,7 @@ exports.requestPRApproval = catchAsync(async(req,res,next)=>{
   }
 
   res.status(201).json({
-    status:"success",
-    statusCode:200,
+   status:200,
     message:"Approval request has been sent to admin",
     requestApproval
   })
@@ -44,8 +43,7 @@ exports.getAllPRRequests = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
-    status: "success",
-    statusCode: 200,
+    status:200,
     message: "Affiliate Requests fetched successfully",
     length: prRequests.length,
     prRequests,
@@ -89,8 +87,7 @@ exports.changeRequestStatus = catchAsync(async(req,res,next)=>{
 
 
   res.status(200).json({
-    status:"success",
-    statusCode:200,
+    status:200,
     message: `PR Request has been ${status}`,
     prRequest
   })

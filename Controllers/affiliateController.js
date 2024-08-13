@@ -85,7 +85,7 @@ const AppError = require("../Utils/appError");
 //   if (status === "approved") {
 //     affiliateRequest.status = "approved";
 //     affiliateRequest.reviewedBy = req.user?._id
-  
+
 //     let newUser;
 
 //     if (!user) {
@@ -105,7 +105,6 @@ const AppError = require("../Utils/appError");
 //         console.log(error);
 //       }
 
-      
 //       await affiliateRequest.save();
 
 //       return res.status(200).json({
@@ -139,7 +138,7 @@ const AppError = require("../Utils/appError");
 //       }
 //       try {
 //         await new Email(newUser).affiliateRejection()
-        
+
 //       } catch (error) {
 //         console.log(error);
 //       }
@@ -158,29 +157,24 @@ const AppError = require("../Utils/appError");
 //   }
 //});
 
-
-
-
-exports.requestAffiliateApproval = catchAsync(async(req,res,next)=>{
+exports.requestAffiliateApproval = catchAsync(async (req, res, next) => {
   const requestApproval = await RequestAdmin.create({
     requestedBy: req.user._id,
-    type: 'affiliate-request',
-  })
+    type: "affiliate-request",
+  });
 
-  if(!requestApproval){
-    return next(new AppError("Error while requesting affiliate approval. Try Again!",400))
+  if (!requestApproval) {
+    return next(
+      new AppError("Error while requesting affiliate approval. Try Again!", 400)
+    );
   }
 
   res.status(201).json({
-    status:"success",
-    statusCode:200,
-    message:"Approval request has been sent to admin",
-    requestApproval
-  })
-})
-
-
-
+    status: 200,
+    message: "Approval request has been sent to admin",
+    requestApproval,
+  });
+});
 
 exports.getAllAffiliateRequests = catchAsync(async (req, res, next) => {
   const affiliateRequests = await RequestAdmin.find({
@@ -193,56 +187,61 @@ exports.getAllAffiliateRequests = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
-    status: "success",
-    statusCode: 200,
+   status: 200,
     message: "Affiliate Requests fetched successfully",
     length: affiliateRequests.length,
     affiliateRequests,
   });
 });
 
-
-
-exports.changeRequestStatus = catchAsync(async(req,res,next)=>{
-  const {status} = req.body
-  const {affiliateRequestId} = req.params
-  if(!affiliateRequestId){
-    return next(new AppError("Please select the affiliate request that you wnat to approve or reject.",400))
+exports.changeRequestStatus = catchAsync(async (req, res, next) => {
+  const { status } = req.body;
+  const { affiliateRequestId } = req.params;
+  if (!affiliateRequestId) {
+    return next(
+      new AppError(
+        "Please select the affiliate request that you wnat to approve or reject.",
+        400
+      )
+    );
   }
 
-  if(!status){
-    return next(new AppError("Please choose whether you want to approve or reject this request.",400))
+  if (!status) {
+    return next(
+      new AppError(
+        "Please choose whether you want to approve or reject this request.",
+        400
+      )
+    );
   }
 
-  const affiliateRequest = await RequestAdmin.findById(affiliateRequestId)
+  const affiliateRequest = await RequestAdmin.findById(affiliateRequestId);
 
-  if(!affiliateRequest){
-    return next(new AppError("Affiliate request with this ID doesn't exist",404))
+  if (!affiliateRequest) {
+    return next(
+      new AppError("Affiliate request with this ID doesn't exist", 404)
+    );
   }
 
-  affiliateRequest.status = `${status}`
+  affiliateRequest.status = `${status}`;
 
-  await affiliateRequest.save()
-  let user
-  if(status === 'approved'){
-     user = await User.findById(affiliateRequest.requestedBy._id)
-    if(!user){
-      return next(new AppError("User with this ID doesn't exist",404))
+  await affiliateRequest.save();
+  let user;
+  if (status === "approved") {
+    user = await User.findById(affiliateRequest.requestedBy._id);
+    if (!user) {
+      return next(new AppError("User with this ID doesn't exist", 404));
     }
 
-    user.isAffiliate = true
-    await user.save()
+    user.isAffiliate = true;
+    await user.save();
   }
 
   //**SEND NOTIFICAITON HERE**//
 
-
   res.status(200).json({
-    status:"success",
-    statusCode:200,
+    status:200,
     message: `Affiliate Request has been ${status}`,
-    affiliateRequest
-  })
-
-
-})
+    affiliateRequest,
+  });
+});
