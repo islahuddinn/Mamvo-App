@@ -34,6 +34,15 @@ router.get('/get-all-affiliate-requests', affiliateControler.getAllAffiliateRequ
 
 // protecting all routes ussing protect midleware
 router.use(authController.protect);
+
+
+router.post(
+  "/request-affiliate-approval",
+  affiliateControler.requestAffiliateApproval
+);
+
+router.patch('/change-affiliate-status/:affiliateRequestId', affiliateControler.changeRequestStatus)
+router.get('/get-all-affiliate-requests', affiliateControler.getAllAffiliateRequests)
 router.post(
   "/request-affiliate-approval",
   affiliateControler.requestAffiliateApproval
