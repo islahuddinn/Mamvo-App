@@ -6,46 +6,8 @@ const validator = require('validator')
 const requestAdminSchema = new mongoose.Schema({
 
     requestedBy:{
-        name:{
-            type: String,
-            required:[true,'Please provide your name']
-        },
-
-        email: {
-            type: String,
-            required: [true, "Please provide your email"],
-            trim: true,
-            unique: true,
-            lowercase: true,
-            validate: [validator.isEmail, "Please choose a valid Email address"],
-          },
-          
-        phoneNumber:{
-            type: String,
-            required:[true,'phoneNumber is a required field']
-        },
-        
-        addressInfo:{
-            location: {
-              type: {
-                  type: String,
-                  default: "Point"
-              },
-              coordinates: {
-                  type: [Number],
-                  default: [0.0,0.0]
-              },
-              address: {
-                  type: String     
-              }
-            },
-      
-        },
-
-        description:{
-            type: String,
-            required:[true,'Provide description for your request']
-        }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
 
     type: {
@@ -76,6 +38,14 @@ const requestAdminSchema = new mongoose.Schema({
 },{timestamps:true})
 
 
+requestAdminSchema.pre([/^find/, 'save'], function(next){
+    this.populate({
+        path: 'requestedBy',
+        select: 'name fullName email'
+    })
+
+    next()
+})
 
 const RequestAdmin = mongoose.model('RequestAdmin', requestAdminSchema)
 

@@ -12,41 +12,34 @@ const AppError = require("../Utils/appError");
 
 /// 1. Notify admin for request to join affiliate program
 
-exports.requestAffiliateApproval = catchAsync(async (req, res, next) => {
-  const { name, email, phoneNumber, addressInfo, description } = req.body;
+exports.requestPRApproval = catchAsync(async(req,res,next)=>{
   const requestApproval = await RequestAdmin.create({
-    requestedBy: {
-      name,
-      email,
-      phoneNumber,
-      addressInfo,
-      description,
-    },
+    requestedBy: req.user._id,
+    type: 'pr-request',
+  })
 
-    type: "affiliate-request",
-  });
-
-  if (!requestApproval) {
-    return next(
-      new AppError("Could not create your affiliate request. Try Again!", 400)
-    );
+  if(!requestApproval){
+    return next(new AppError("Error while requesting PR approval. Try Again!",400))
   }
 
   res.status(201).json({
-    status: "success",
-    statusCode: 200,
-    message: "Your request has been submitted. Wait for the Admin Approval.",
-    requestApproval,
-  });
-});
+    status:"success",
+    statusCode:200,
+    message:"Approval request has been sent to admin",
+    requestApproval
+  })
+})
 
-exports.getAllAffiliateRequests = catchAsync(async (req, res, next) => {
-  const affiliateRequests = await RequestAdmin.find({
-    type: "affiliate-request",
+
+
+
+exports.getAllPRRequests = catchAsync(async (req, res, next) => {
+  const prRequests = await RequestAdmin.find({
+    type: "pr-request",
     status: "pending",
   });
 
-  if (!affiliateRequests) {
+  if (!prRequests) {
     return next(new AppError("Couldn't fetch any affiliate requests", 400));
   }
 
@@ -54,106 +47,53 @@ exports.getAllAffiliateRequests = catchAsync(async (req, res, next) => {
     status: "success",
     statusCode: 200,
     message: "Affiliate Requests fetched successfully",
-    length: affiliateRequests.length,
-    affiliateRequests,
+    length: prRequests.length,
+    prRequests,
   });
 });
 
-exports.changeRequestStatus = catchAsync(async (req, res, next) => {
-  const { status } = req.body;
-  const { affiliateRequestId } = req.params;
-  if (!affiliateRequestId) {
-    return next(new AppError("Please select the affiliate request", 400));
-  }
-  if (!status) {
-    return next(
-      new AppError("Please provide the status for this affiliate request", 400)
-    );
+
+
+exports.changeRequestStatus = catchAsync(async(req,res,next)=>{
+  const {status} = req.body
+  const {prRequestId} = req.params
+  if(!prRequestId){
+    return next(new AppError("Please select the PR request that you wnat to approve or reject.",400))
   }
 
-  let affiliateRequest = await RequestAdmin.findById(affiliateRequestId);
-  if (!affiliateRequest) {
-    return next(
-      new AppError("Affiliate Request with this ID doesn't exist.", 400)
-    );
+  if(!status){
+    return next(new AppError("Please choose whether you want to approve or reject this request.",400))
   }
 
-  const user = await User.findOne({
-    email: affiliateRequest.requestedBy.email,
-  });
+  const prRequest = await RequestAdmin.findById(prRequestId)
 
-  if (status === "approved") {
-    affiliateRequest.status = "approved";
-    affiliateRequest.reviewedBy = req.user?._id
-  
-    let newUser;
+  if(!prRequest){
+    return next(new AppError("Affiliate request with this ID doesn't exist",404))
+  }
 
-    if (!user) {
-      const defaultPassword = `mamvo${affiliateRequest.requestedBy.name}`;
-      newUser = await User.create({
-        email: affiliateRequest.requestedBy.email,
-        password: `mamvo${affiliateRequest.requestedBy.name}`,
-        active: true,
-        isAffiliate: true,
-      });
+  prRequest.status = `${status}`
 
-      try {
-        await new Email(newUser, defaultPassword).affiliateConfirmation(
-          defaultPassword
-        );
-      } catch (error) {
-        console.log(error);
-      }
-
-      
-      await affiliateRequest.save();
-
-      return res.status(200).json({
-        status: "success",
-        statusCode: 200,
-        message: "Affiliation request has been approved.",
-        affiliateRequest,
-      });
-    }
-
-    user.isAffiliate = true;
-
-    await user.save();
-
-    await affiliateRequest.save();
-
-    //------Send Notification Here ------ //
-
-    return res.status(200).json({
-      status: "success",
-      statusCode: 200,
-      message: "Affiliation request has been approved.",
-      affiliateRequest,
-    });
-  }else if(status === 'rejected'){
-    affiliateRequest.status = 'rejected';
-    affiliateRequest.reviewedBy = req.user?._id
+  await prRequest.save()
+  let user
+  if(status === 'approved'){
+     user = await User.findById(prRequest.requestedBy._id)
     if(!user){
-      const newUser = {
-        email: affiliateRequest.requestedBy.email
-      }
-      try {
-        await new Email(newUser).affiliateRejection()
-        
-      } catch (error) {
-        console.log(error);
-      }
+      return next(new AppError("User with this ID doesn't exist",404))
     }
 
-    //------Send Notification Here------//
-
-    await affiliateRequest.save()
-
-    res.status(200).json({
-      status:"success",
-      statusCode:200,
-      message:"Affiliate request has been rejected",
-      affiliateRequest
-    })
+    user.isPRUser = true
+    await user.save()
   }
-});
+
+  //**SEND NOTIFICAITON HERE**//
+
+
+  res.status(200).json({
+    status:"success",
+    statusCode:200,
+    message: `PR Request has been ${status}`,
+    prRequest
+  })
+
+
+})

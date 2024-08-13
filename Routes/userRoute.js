@@ -1,6 +1,7 @@
 const express = require("express");
 const userControler = require("../Controllers/userController");
 const affiliateControler = require("../Controllers/affiliateController");
+const prController = require('../Controllers/prController')
 const authController = require("../Controllers/authController");
 // const apiController = require("../Controllers/apiController");
 // const pushNotificationController = require("../controllers/push-notificationController");
@@ -33,6 +34,26 @@ router.get('/get-all-affiliate-requests', affiliateControler.getAllAffiliateRequ
 
 // protecting all routes ussing protect midleware
 router.use(authController.protect);
+router.post(
+  "/request-affiliate-approval",
+  affiliateControler.requestAffiliateApproval
+);
+
+router.patch('/change-affiliate-status/:affiliateRequestId', affiliateControler.changeRequestStatus)
+router.get('/get-all-affiliate-requests', affiliateControler.getAllAffiliateRequests)
+
+
+
+router.post(
+  "/request-pr-approval",
+  prController.requestPRApproval
+);
+
+router.patch('/change-pr-status/:prRequestId', prController.changeRequestStatus)
+router.get('/get-all-pr-requests', prController.getAllPRRequests)
+
+
+
 router.get("/mynotifications", userControler.mynotifications);
 
 //router.post("/requestAprroved", affiliateControler.requestApproved);
