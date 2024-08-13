@@ -158,6 +158,8 @@ const AppError = require("../Utils/appError");
 //});
 
 exports.requestAffiliateApproval = catchAsync(async (req, res, next) => {
+  console.log("LOGGED IN USER IS:::", req.user)
+  console.log("LGGED IN USER ID IS::", req.user._id)
   const requestApproval = await RequestAdmin.create({
     requestedBy: req.user._id,
     type: "affiliate-request",
