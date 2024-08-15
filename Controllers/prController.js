@@ -5,6 +5,7 @@ const Email = require("../Utils/mailSend");
 const generateReferralCode = require("../Utils/referralCodeGenerator");
 const RequestAdmin = require("../Models/requestAdminModel");
 const AppError = require("../Utils/appError");
+const RefreshToken = require('../Models/refreshTokenModel')
 const Notification = require("../Models/notificationModel");
 const {
   sendNotification,

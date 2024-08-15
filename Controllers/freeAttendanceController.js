@@ -3,6 +3,7 @@ const User = require("../Models/userModel");
 const Event = require("../Models/eventModelv2");
 const RequestAdmin = require("../Models/requestAdminModel");
 const AppError = require("../Utils/appError");
+const RefreshToken = require('../Models/refreshTokenModel')
 const Notification = require("../Models/notificationModel");
 const {
   sendNotification,
