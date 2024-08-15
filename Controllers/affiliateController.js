@@ -164,6 +164,27 @@ const {
 exports.requestAffiliateApproval = catchAsync(async (req, res, next) => {
   console.log("LOGGED IN USER IS:::", req.user)
   console.log("LGGED IN USER ID IS::", req.user._id)
+
+  if(req.user.isAffiliate){
+    return next(new AppError("You're already an affiliate user. You cannot request again!",400))
+  }
+
+  const existingRequest = await RequestAdmin.findOne({
+    requestedBy: req.user._id,
+    type: 'affiliate-request'
+  })
+
+  if(existingRequest && existingRequest.status === 'pending'){
+    return res.status(200).json({
+      status:200,
+      message:'You already have a pending affiliate request. Please wait for admin approval.',
+      requestStatus:'pending',
+      existingRequest
+    })
+  }else if(existingRequest && existingRequest.status === 'rejected'){
+    await RequestAdmin.findByIdAndDelete(existingRequest._id)
+  }
+
   const requestApproval = await RequestAdmin.create({
     requestedBy: req.user._id,
     type: "affiliate-request",
@@ -278,3 +299,4 @@ exports.changeRequestStatus = catchAsync(async (req, res, next) => {
     affiliateRequest,
   });
 });
+

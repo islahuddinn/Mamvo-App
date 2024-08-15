@@ -17,6 +17,30 @@ const {
 /// 1. Notify admin for request to join affiliate program
 
 exports.requestPRApproval = catchAsync(async (req, res, next) => {
+
+  if(req.user.isPRUser){
+    return next(new AppError("You're already a PR user. You cannot request again!",400))
+  }
+
+  const existingRequest = await RequestAdmin.findOne({
+    requestedBy: req.user._id,
+    type: 'pr-request'
+  })
+
+  if(existingRequest && existingRequest.status === 'pending'){
+    return res.status(200).json({
+      status:200,
+      message:'You already have a pending pr request. Please wait for admin approval.',
+      requestStatus:'pending',
+      existingRequest
+    })
+  }else if(existingRequest && existingRequest.status === 'rejected'){
+    await RequestAdmin.findByIdAndDelete(existingRequest._id)
+  }
+
+
+
+
   const requestApproval = await RequestAdmin.create({
     requestedBy: req.user._id,
     type: "pr-request",
