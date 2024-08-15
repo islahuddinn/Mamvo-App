@@ -35,7 +35,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   }
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
-  const filteredBody = filterObj(req.body, "email", "addressInfo");
+  const filteredBody = filterObj(req.body, "email", "addressInfo", 'isNotifications');
   if (req.file) filteredBody.photo = req.file.filename;
   // 3) Update user document..
   const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
@@ -199,79 +199,97 @@ exports.getWalletBalance = catchAsync(async (req, res, next) => {
 });
 
 /////////// Notifications
-exports.mynotifications = catchAsync(async (req, res, next) => {
-  const notifictations = await Notification.find({
-    $and: [{ notifyType: { $ne: "sendMessage" } }, { receiver: req.user.id }],
+// exports.mynotifications = catchAsync(async (req, res, next) => {
+//   const notifictations = await Notification.find({
+//     $and: [{ notifyType: { $ne: "sendMessage" } }, { receiver: req.user.id }],
+//   }).sort("-createdAt");
+
+//   const notifictationsmulti = await Notification.find({
+//     $and: [
+//       { notifyType: { $ne: "sendMessage" } },
+//       { multireceiver: { $in: [req.user.id] } },
+//     ],
+//   }).sort("-createdAt");
+
+//   await Notification.updateMany(
+//     {
+//       $and: [
+//         { isSeen: { $not: { $elemMatch: { $eq: req.user.id } } } },
+//         { multireceiver: { $elemMatch: { $eq: req.user.id } } },
+//       ],
+//     },
+//     { $addToSet: { isSeen: req.user.id } }
+//   );
+
+//   //////////////////
+//   let records;
+//   records = JSON.parse(JSON.stringify(notifictationsmulti));
+//   console.log("RECORDS: ", records.length);
+//   for (let i = 0; i < records.length; i++) {
+//     if (records[i].isSeen && records[i].isSeen.length > 0) {
+//       if (records[i].isSeen.includes(JSON.parse(JSON.stringify(req.user.id)))) {
+//         records[i].actionTaken = true;
+//       } else {
+//         records[i].actionTaken = false;
+//       }
+//     } else {
+//       records[i].actionTaken = false;
+//     }
+//     console.log("A");
+//   }
+
+//   // records.push(JSON.parse(JSON.stringify(notifictations)));
+//   const mergedNotifications = records.concat(notifictations);
+//   // console.log(records);
+//   mergedNotifications.sort((a, b) => b.createdAt - a.createdAt);
+//   //////
+
+//   const filteredDocs = notifictations.filter((doc) => !doc.actionTaken);
+
+//   const ids = filteredDocs.map((doc) => doc._id);
+
+//   const update = {
+//     $set: {
+//       actionTaken: true,
+//     },
+//   };
+
+//   const filter = {
+//     _id: {
+//       $in: ids,
+//     },
+//   };
+
+//   await Notification.updateMany(filter, update);
+
+//   const data = paginateArray(
+//     mergedNotifications,
+//     req.query.page,
+//     req.query.limit
+//   );
+
+//   res.status(200).json({
+//     success: true,
+//     status: 200,
+//     size: mergedNotifications.length,
+//     data,
+//   });
+// });
+
+
+
+exports.myNotifications = asyncHandler(async (req, res, next) => {
+  const notifications = await Notification.find({
+    receiver: req.user._id,
   }).sort("-createdAt");
-
-  const notifictationsmulti = await Notification.find({
-    $and: [
-      { notifyType: { $ne: "sendMessage" } },
-      { multireceiver: { $in: [req.user.id] } },
-    ],
-  }).sort("-createdAt");
-
-  await Notification.updateMany(
-    {
-      $and: [
-        { isSeen: { $not: { $elemMatch: { $eq: req.user.id } } } },
-        { multireceiver: { $elemMatch: { $eq: req.user.id } } },
-      ],
-    },
-    { $addToSet: { isSeen: req.user.id } }
-  );
-
-  //////////////////
-  let records;
-  records = JSON.parse(JSON.stringify(notifictationsmulti));
-  console.log("RECORDS: ", records.length);
-  for (let i = 0; i < records.length; i++) {
-    if (records[i].isSeen && records[i].isSeen.length > 0) {
-      if (records[i].isSeen.includes(JSON.parse(JSON.stringify(req.user.id)))) {
-        records[i].actionTaken = true;
-      } else {
-        records[i].actionTaken = false;
-      }
-    } else {
-      records[i].actionTaken = false;
-    }
-    console.log("A");
+  if (!notifications) {
+    return next(new CustomError("Error retrieving notifications!", 400));
   }
-
-  // records.push(JSON.parse(JSON.stringify(notifictations)));
-  const mergedNotifications = records.concat(notifictations);
-  // console.log(records);
-  mergedNotifications.sort((a, b) => b.createdAt - a.createdAt);
-  //////
-
-  const filteredDocs = notifictations.filter((doc) => !doc.actionTaken);
-
-  const ids = filteredDocs.map((doc) => doc._id);
-
-  const update = {
-    $set: {
-      actionTaken: true,
-    },
-  };
-
-  const filter = {
-    _id: {
-      $in: ids,
-    },
-  };
-
-  await Notification.updateMany(filter, update);
-
-  const data = paginateArray(
-    mergedNotifications,
-    req.query.page,
-    req.query.limit
-  );
-
   res.status(200).json({
-    success: true,
-    status: 200,
-    size: mergedNotifications.length,
-    data,
+    status: "success",
+    statusCode: 200,
+    message: "Notifications fetched successfully.",
+    length: notifications.length,
+    data: notifications,
   });
 });

@@ -10,10 +10,15 @@ const requestAdminSchema = new mongoose.Schema({
         ref: 'User'
     },
 
+    event:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event'
+    },
+
     type: {
         type: String,
         enum:{
-            values:['affiliate-request', 'pr-request'],
+            values:['affiliate-request', 'pr-request', 'free-attendance-request'],
             message:"Please provide valid type value"
         },
         required:[true,'type is a required field']
@@ -44,8 +49,16 @@ requestAdminSchema.pre([/^find/, 'save'], function(next){
         select: 'name fullName email'
     })
 
+    this.populate({
+        path: 'event'
+    })
+
     next()
 })
+
+
+
+
 
 const RequestAdmin = mongoose.model('RequestAdmin', requestAdminSchema)
 

@@ -49,7 +49,7 @@ router.get('/get-all-pr-requests', prController.getAllPRRequests)
 
 
 
-router.get("/mynotifications", userControler.mynotifications);
+router.get("/mynotifications", userControler.myNotifications);
 
 //router.post("/requestAprroved", affiliateControler.requestApproved);
 // router.post("/handleEventCommission", affiliateControler.calculateCashback);
