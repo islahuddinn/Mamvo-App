@@ -63,7 +63,7 @@ exports.requestFreeAttendance = catchAsync(async (req, res, next) => {
   }
 
   res.status(201).json({
-    status: 200,
+    status: 201,
     message: "Approval request has been sent to admin",
     requestApproval,
   });
