@@ -2,13 +2,10 @@ const catchAsync = require("../Utils/catchAsync");
 const Event = require("../Models/eventModel");
 const User = require("../Models/userModel");
 const factory = require("./handleFactory");
-const Notification = require("../Models/notificationModel");
+
 const EventTickets = require("../Models/ticketsRateModel");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const {
-  SendNotification,
-  SendNotificationMultiCast,
-} = require("../Utils/notification");
+
 
 exports.createEvent = catchAsync(async (req, res, next) => {
   const {
