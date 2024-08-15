@@ -142,6 +142,9 @@ exports.changeRequestStatus = catchAsync(async (req, res, next) => {
     tokens.map(({ deviceToken }) => deviceToken)
   );
 
+  
+  console.log("FCM TOKENS ARE:", fcmTokens)
+
   if (user.isNotifications && fcmTokens.length > 1) {
     await sendMulticastNotification({
       fcmTokens,
