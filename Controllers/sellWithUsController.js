@@ -29,8 +29,7 @@ exports.createSellWithUs = catchAsync(async(req,res,next)=>{
 
 
     res.status(201).json({
-        status:"success",
-        statusCode:200,
+        status:200,
         message:"Your request has been sent to admin",
         sellWithUs
     })
