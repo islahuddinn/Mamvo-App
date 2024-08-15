@@ -278,12 +278,12 @@ exports.getWalletBalance = catchAsync(async (req, res, next) => {
 
 
 
-exports.myNotifications = asyncHandler(async (req, res, next) => {
+exports.myNotifications = catchAsync(async (req, res, next) => {
   const notifications = await Notification.find({
     receiver: req.user._id,
   }).sort("-createdAt");
   if (!notifications) {
-    return next(new CustomError("Error retrieving notifications!", 400));
+    return next(new AppError("Error retrieving notifications!", 400));
   }
   res.status(200).json({
     status: "success",

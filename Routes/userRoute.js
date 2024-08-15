@@ -3,6 +3,7 @@ const userControler = require("../Controllers/userController");
 const affiliateControler = require("../Controllers/affiliateController");
 const prController = require('../Controllers/prController')
 const authController = require("../Controllers/authController");
+const freeAttendanceController = require('../Controllers/freeAttendanceController')
 // const apiController = require("../Controllers/apiController");
 // const pushNotificationController = require("../controllers/push-notificationController");
 
