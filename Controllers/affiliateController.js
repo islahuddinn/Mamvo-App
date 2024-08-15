@@ -1,11 +1,15 @@
 const catchAsync = require("../Utils/catchAsync");
 const User = require("../Models/userModel");
 const Event = require("../Models/eventModel");
-const { SendNotification } = require("../Utils/notification");
 const Email = require("../Utils/mailSend");
 const generateReferralCode = require("../Utils/referralCodeGenerator");
 const RequestAdmin = require("../Models/requestAdminModel");
 const AppError = require("../Utils/appError");
+const Notification = require("../Models/notificationModel");
+const {
+  sendNotification,
+  sendMulticastNotification,
+} = require("../Utils/Notifications");
 
 // const Event = require("../Models/eventModel");
 // const Referral = require("../Models/referralModel");
@@ -240,6 +244,33 @@ exports.changeRequestStatus = catchAsync(async (req, res, next) => {
   }
 
   //**SEND NOTIFICAITON HERE**//
+  await Notification.create({
+    notificationType: "affiliate-request",
+    receiver: user._id,
+    title: "Affiliate request status",
+    body: `Your Affiliate request has been ${status} .`,
+    data: user,
+  });
+  const fcmTokens = await RefreshToken.find({ user: user._id }).then((tokens) =>
+    tokens.map(({ deviceToken }) => deviceToken)
+  );
+
+  if (user.isNotifications && fcmTokens.length > 1) {
+    await sendMulticastNotification({
+      fcmTokens,
+      title: "Affiliate request status",
+      body: `Your Affiliate request has been ${status} .`,
+      notificationData: JSON.stringify(user),
+    });
+  } else if (user.isNotifications && fcmTokens.length === 1) {
+    await sendNotification({
+      fcmToken: fcmTokens[0],
+      title: "Affiliate request status",
+      body: `Your Affiliate request has been ${status} .`,
+      notificationData: JSON.stringify(user),
+    });
+  }
+
 
   res.status(200).json({
     status:200,
