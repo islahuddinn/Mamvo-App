@@ -71,7 +71,7 @@ const userSchema = new mongoose.Schema(
     },
     isNotifications:{
       type: Boolean,
-      default: false
+      default: true
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
