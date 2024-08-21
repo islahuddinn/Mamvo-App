@@ -52,7 +52,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
       return next(new AppError("Error while booking the ticket ", 404));
     }
 
-    const { userId } = req.params;
+    const { userId } = req.body;
     if (userId) {
       const user = await User.findById(userId);
       if (!user) {
@@ -70,8 +70,6 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
             priceId: ticket?.price?._id,
             name: ticket?.price?.name,
             price: ticket?.price?.price,
-            // validUntil: ticket.price.,
-            // quantity: ticket.price.,
             feeType: ticket?.price?.fee_type,
             feeQuantity: ticket?.price?.fee_quantity,
             includes: ticket?.price?.includes,
@@ -111,6 +109,60 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
           totalPrice: ticket?.total_price,
           userId: user._id,
           userType: "registered-user",
+          paymentId
+        });
+      }
+    }else{
+      const paymentId = booking.payment_id
+      for (const ticket of booking.tickets) {
+        await Ticket.create({
+          eventId: ticket?.event_id,
+          ticketRateId: ticket?.ticket_rate_id,
+          ticketId: ticket?._id,
+          qrCode: ticket?.qr_code,
+          status: ticket?.status,
+          price: {
+            priceId: ticket?.price?._id,
+            name: ticket?.price?.name,
+            price: ticket?.price?.price,
+            feeType: ticket?.price?.fee_type,
+            feeQuantity: ticket?.price?.fee_quantity,
+            includes: ticket?.price?.includes,
+            additionalInfo: ticket?.price?.additional_info,
+          },
+          channelId: ticket?.channel_id,
+          fees: {
+            organization: ticket?.fees?.organization,
+          },
+          fullName: ticket?.full_name,
+          phone: ticket?.phone,
+          email: ticket?.email,
+          gender: ticket?.gender,
+          birthday: ticket?.birthday,
+          address: ticket?.address,
+          postalCode: ticket?.postal_code,
+          countryCode: ticket?.country_code,
+          answers: ticket?.answers.map((answer) => ({
+            questionId: answer?.questionId,
+            answer: answer?.answer,
+          })),
+          supplements: ticket?.supplements.map((supplement) => ({
+            supplementId: supplement?.supplementId,
+            label: supplement?.label,
+            price: supplement?.price,
+          })),
+          refunded: ticket?.refunded,
+          refunds: ticket?.refunds.map((refund) => ({
+            channelId: refund?.channelId,
+            amount: refund?.amount,
+            at: refund?.at,
+          })),
+          for: ticket?.for,
+          enter: ticket?.enter,
+          totalSupplements: ticket?.total_supplements,
+          totalFees: ticket?.total_fees,
+          totalPrice: ticket?.total_price,
+          userType: "guest-user",
           paymentId
         });
       }
