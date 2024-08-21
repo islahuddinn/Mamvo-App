@@ -54,6 +54,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
 
     const { userId } = req.body;
     if (userId) {
+      console.log("--------------------- USER ID EXISTS ------------------------")
       const user = await User.findById(userId);
       if (!user) {
         return next(new CustomError("User with this ID doesn't exist", 404));
@@ -73,7 +74,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
             feeType: ticket?.price?.fee_type,
             feeQuantity: ticket?.price?.fee_quantity,
             includes: ticket?.price?.includes,
-            additionalInfo: ticket?.price?.additional_info,
+            additionalInfo: ticket?.price?.additional_info || "",
           },
           channelId: ticket?.channel_id,
           fees: {

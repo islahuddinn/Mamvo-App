@@ -15,7 +15,7 @@ const ticketSchema = new mongoose.Schema({
     feeType: { type: String, required: true },
     feeQuantity: { type: Number, required: true },
     includes: { type: String, required: true },
-    additionalInfo: { type: String, required: true }
+    additionalInfo: { type: String }
   },
   channelId: { type: String, required: true },
   fees: {
