@@ -186,6 +186,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
 
 
 exports.verifyTicketStatus = catchAsync(async(req,res,next)=>{
+  console.log("_______________VERIFYING TICKET STATUS API HIT_______________")
    const {paymentId} = req.params
    if(!paymentId){
     return next(new AppError("Please provide the payment id of the ticket you booked",400))
@@ -200,6 +201,8 @@ exports.verifyTicketStatus = catchAsync(async(req,res,next)=>{
       await ticket.save()
     }
    }
+
+   console.log("----------------------SENDING RESPONSE FOR VERIFYING TICKET---------------------")
 
    res.status(200).json({
     status:"success",
