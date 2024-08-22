@@ -195,7 +195,10 @@ exports.verifyTicketStatus = catchAsync(async(req,res,next)=>{
    const tickets = await Ticket.find({paymentId})
 
    for (const ticket of tickets){
+    console.log("-------------------EXECUTING FOR LOOP--------------------")
+    console.log("-----------TICKET_STATUS IS:", ticket.status)
     if(ticket.status === 'pending_payment'){
+      console.log("-----------------TICKET STATUS IS PENDING CHANGING TICKET STATUS------------------")
       ticket.status = 'active'
 
       await ticket.save()
