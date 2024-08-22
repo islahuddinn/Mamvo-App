@@ -1,5 +1,7 @@
 const Ticket = require("../Models/ticketModelv2");
 const User = require("../Models/userModel");
+const Event = require('../Models/eventModelv2')
+const TicketRate = require('../Models/ticketRateModelv2')
 const catchAsync = require("../Utils/catchAsync");
 const AppError = require("../Utils/catchAsync");
 const axios = require("axios");
@@ -228,11 +230,31 @@ exports.getMyBookedTickets = catchAsync(async(req,res,next)=>{
     userType:'registered-user'
   })
 
+  const ticketsCopy = JSON.parse(JSON.stringify(tickets))
+
+
+  for(const ticket of ticketsCopy){
+    const event = await Event.findOne({eventId: ticket.eventId})
+    if(!event){
+      return next(new AppError("Could not find associated event with this ticket",404))
+    }
+
+    const ticketRate = await TicketRate.findOne({ticketRateId: ticket.ticketRateId})
+    if(!ticketRate){
+      return next(new AppError("Could not find associated ticket rate with this ticket",404))
+    }
+    ticket.eventName = event.name
+    ticket.eventStartDate = event.start_date
+    ticket.eventEndDate = event.end_date
+    ticket.eventLocation = event.location
+    ticket.ticketName = ticketRate.name
+  }
+
   res.status(200).json({
     status:"success",
     statusCode:200,
     message:"Tickets fetched succesfully",
     length: tickets.length,
-    tickets
+    tickets: ticketsCopy
   })
 })
