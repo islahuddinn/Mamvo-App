@@ -192,7 +192,11 @@ exports.verifyTicketStatus = catchAsync(async(req,res,next)=>{
     return next(new AppError("Please provide the payment id of the ticket you booked",400))
    }
 
+   console.log("PAYMENT ID IN PARMAS IS:", paymentId)
+
    const tickets = await Ticket.find({paymentId})
+
+   console.log("TICKETS ARE:", tickets)
 
    for (const ticket of tickets){
     console.log("-------------------EXECUTING FOR LOOP--------------------")

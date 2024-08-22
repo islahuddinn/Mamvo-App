@@ -23,7 +23,7 @@ async function fetchAndStoreEvents() {
       }
     );
     const events = response.data.data;
-    console.log("EVENTS IS:", events);
+    //console.log("EVENTS IS:", events);
 
     for (const event of events) {
     //   const existingEvent = await Event.findOne({ eventId: event._id }).lean();
@@ -83,8 +83,8 @@ async function fetchAndStoreTicketRates(eventId) {
     );
 
     const ticketRates = response.data.data;
-    console.log("------------------------------------------");
-    console.log("TICKET RATES IS:", ticketRates);
+    //console.log("------------------------------------------");
+    //console.log("TICKET RATES IS:", ticketRates);
 
     for (const rate of ticketRates) {
     //   const existingRate = await TicketRate.findOne({
@@ -181,7 +181,7 @@ async function fetchAndStoreOrganizations() {
 
     const organizations = response.data.data;
 
-    console.log("ORGANIZATIONS ARE::::::", organizations)
+    //console.log("ORGANIZATIONS ARE::::::", organizations)
 
     for (const org of organizations) {
     //   const existingOrg = await Organization.findOne({
