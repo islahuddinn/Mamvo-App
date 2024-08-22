@@ -244,6 +244,7 @@ exports.getMyBookedTickets = catchAsync(async(req,res,next)=>{
       return next(new AppError("Could not find associated ticket rate with this ticket",404))
     }
     ticket.eventName = event.name
+    ticket.eventImage = event.image_url
     ticket.eventStartDate = event.start_date
     ticket.eventEndDate = event.end_date
     ticket.eventLocation = event.location
