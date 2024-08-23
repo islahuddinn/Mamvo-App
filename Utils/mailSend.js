@@ -54,7 +54,8 @@ module.exports = class Email {
       `**Important:** If this request wasn't made by you then consider changing your password.\n\n` +
       `Thank you for joining us!\n\n` +
       `Best regards,\n` +
-      `Mamvo App Team`
+      `Mamvo App Team`,
+      `Delete Account Request`
     );
   }
 
