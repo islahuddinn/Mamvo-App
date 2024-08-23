@@ -125,7 +125,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     return next(new AppError("Could not find the user", 404));
   }
 
-  if (user.otp !== otp || user.otpExpires < Date.now()) {
+  if (user.otp != otp || user.otpExpires < Date.now()) {
     return next(
       new AppError("Verification Failed. Your OTP is Invalid or expired.", 400)
     );
