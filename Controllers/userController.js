@@ -74,6 +74,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 exports.sendOtpForDeletingMe = catchAsync(async (req, res, next) => {
   const { password } = req.body;
+  console.log("password is",password)
   if (!password) {
     return next(
       new AppError("Please type your password before deleting account.", 400)
