@@ -256,14 +256,15 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
       data: {},
     });
   }
-  user.passwordResetToken = otp;
+  user.otp = otp;
+  user.otpExpires = Date.now() + 1 * 60 * 1000;
   await user.save();
 
-  const newUser = await User.findOneAndUpdate(
-    { email: req.body.email },
-    { otp },
-    { new: true, runValidators: false }
-  );
+  // const newUser = await User.findOneAndUpdate(
+  //   { email: req.body.email },
+  //   { otp },
+  //   { new: true, runValidators: false }
+  // );
   console.log(otp);
 
   try {
@@ -454,9 +455,10 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     // Update user with OTP
+    const otpExpires = Date.now() + 1 * 60 * 1000;
     await User.findOneAndUpdate(
       { email: user.email },
-      { otp },
+      { otp, otpExpires },
       { new: true, runValidators: false }
     );
 
