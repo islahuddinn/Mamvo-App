@@ -46,6 +46,18 @@ module.exports = class Email {
     await this.send(`Your OTP is: ${a}`, `Email Verification For Mamvo App`);
   }
 
+  async sendDelete(a){
+    console.log("sending mail...");
+    await this.send(
+      `Welcome to Mamvo App!\n\n` +
+      `Your OTP for account deletion is: ${a}\n\n` +
+      `**Important:** If this request wasn't made by you then consider changing your password.\n\n` +
+      `Thank you for joining us!\n\n` +
+      `Best regards,\n` +
+      `Mamvo App Team`
+    );
+  }
+
   async affiliateConfirmation(a) {
     console.log("sending mail affiliate...");
     await this.send(

@@ -222,9 +222,11 @@ exports.signup = catchAsync(async (req, res, next) => {
       data: {},
     });
   }
+  const otpExpires = Date.now() + 1 * 60 * 1000;
   const newUserotp = await User.findOneAndUpdate(
     { email: userotp.email },
-    { otp },
+    { otp, otpExpires },
+    
     { new: true, runValidators: false }
   );
 
@@ -282,7 +284,7 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
 exports.verifyOtp = catchAsync(async (req, res, next) => {
   const user = await User.findOne({
     email: req.body.email,
-    passwordResetExpires: { $gt: Date.now() },
+    //passwordResetExpires: { $gt: Date.now() },
   });
 
   if (!user) {
@@ -294,15 +296,15 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
       data: {},
     });
   }
-  if (user.otp != req.body.otp) {
-    return res.status(400).send({
-      message: "Invalid Token",
-      success: false,
-      errorType: "wrong-otp",
-      status: 400,
-      data: {},
-    });
+  if (user.otp !== otp || user.otpExpires < Date.now()) {
+    return next(
+      new AppError("Verification Failed. Your OTP is Invalid or expired.", 400)
+    );
   }
+  user.otp = undefined;
+  user.otpExpires = undefined;
+
+  await user.save()
 
   res.status(200).json({
     status: 200,

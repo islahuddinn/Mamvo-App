@@ -63,6 +63,8 @@ router.post("/logout", authController.logout);
 
 router.get("/me", userControler.getMe, userControler.getUser);
 router.patch("/updateProfile", userControler.updateMe);
+router.post('/send-otp-for-deleting', userControler.sendOtpForDeletingMe)
+router.post('/delete-me', userControler.deleteMe)
 // router.patch("/updateMe", userControler.updateMe);
 // router.patch("/updateProfile", userControler.updateUserProfile);
 router.route("/getAllUsers").get(userControler.getAllUsers);

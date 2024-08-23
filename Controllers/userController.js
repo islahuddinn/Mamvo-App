@@ -8,6 +8,7 @@ const Notification = require("../Models/notificationModel");
 // const paginationQueryExtracter = require("../Utils/paginationQueryExtractor");
 const paginateArray = require("../Utils/paginationHelper");
 const RefreshToken = require("../Models/refreshTokenModel");
+const Email = require("../Utils/mailSend");
 // const Guardian = require("../Models/guardianModel");
 
 const filterObj = (obj, ...allowedFields) => {
@@ -52,23 +53,98 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteMe = catchAsync(async (req, res, next) => {
-  // await User.findByIdAndUpdate(req.user.id, { active: false });
-  const user = await User.findOne({ _id: req.user._id });
-  if (user.subscriptionId) {
-    await stripe.subscriptions.del(user.subscriptionId);
+// exports.deleteMe = catchAsync(async (req, res, next) => {
+//   // await User.findByIdAndUpdate(req.user.id, { active: false });
+//   const user = await User.findOne({ _id: req.user._id });
+//   if (user.subscriptionId) {
+//     await stripe.subscriptions.del(user.subscriptionId);
+//   }
+//   await RefreshToken.deleteMany({ user: req.user._id });
+//   await Guardian.deleteMany({
+//     $or: [{ guardian: req.user._id }, { user: req.user._id }],
+//   });
+//   await User.findByIdAndDelete(req.user._id);
+//   res.status(200).json({
+//     status: 204,
+//     success: true,
+//     data: null,
+//   });
+// });
+
+
+exports.sendOtpForDeletingMe = catchAsync(async (req, res, next) => {
+  const { password } = req.body;
+  if (!password) {
+    return next(
+      new AppError("Please type your password before deleting account.")
+    );
   }
-  await RefreshToken.deleteMany({ user: req.user._id });
-  await Guardian.deleteMany({
-    $or: [{ guardian: req.user._id }, { user: req.user._id }],
-  });
-  await User.findByIdAndDelete(req.user._id);
+  const user = await User.findById(req.user._id).select("+password");
+  const isMatch = await user.correctPassword(password, user.password);
+  if (!isMatch) {
+    return next(new AppError("Please type the correct password", 400));
+  }
+  
+  const otpLength = 4;
+  const otp = generateOtp(otpLength);
+  
+  if (!otp) {
+    return next(new AppError("Error while generating OTP", 400));
+  }
+  console.log("Generated OTP:", otp);
+
+  ////// Sending Email..
+  try {
+    await new Email(user, otp).sendDelete(otp);
+  } catch (error) {
+    console.log(error);
+  }
+  user.otpExpires = Date.now() + 1 * 60 * 1000;
+  user.otp = otp
+
+  await user.save();
+
+
   res.status(200).json({
-    status: 204,
-    success: true,
+    status: "success",
+    statusCode: 200,
+    message: "OTP has been sent to your email for verification.",
+  });
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  const { otp } = req.body;
+  if (!otp) {
+    return next(new AppError("Please provide OTP", 400));
+  }
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    return next(new AppError("Could not find the user", 404));
+  }
+
+  if (user.otp !== otp || user.otpExpires < Date.now()) {
+    return next(
+      new AppError("Verification Failed. Your OTP is Invalid or expired.", 400)
+    );
+  }
+
+  user.active = false;
+  user.otp = undefined;
+  user.otpExpires = undefined;
+
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    statusCode: 200,
+    message: "Account Deleted!",
     data: null,
   });
 });
+
+
 
 exports.getUser = catchAsync(async (req, res, next) => {
   let user = await User.findById(req.params.id);
