@@ -297,7 +297,7 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
       data: {},
     });
   }
-  if (user.otp !== otp || user.otpExpires < Date.now()) {
+  if (user.otp != otp || user.otpExpires < Date.now()) {
     return next(
       new AppError("Verification Failed. Your OTP is Invalid or expired.", 400)
     );
