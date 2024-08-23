@@ -106,8 +106,7 @@ exports.sendOtpForDeletingMe = catchAsync(async (req, res, next) => {
 
 
   res.status(200).json({
-    status: "success",
-    statusCode: 200,
+    status: 200,
     message: "OTP has been sent to your email for verification.",
   });
 });
@@ -137,8 +136,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   await user.save();
 
   res.status(200).json({
-    status: "success",
-    statusCode: 200,
+    status: 200,
     message: "Account Deleted!",
     data: null,
   });
