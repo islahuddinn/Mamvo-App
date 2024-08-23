@@ -9,6 +9,7 @@ const Notification = require("../Models/notificationModel");
 const paginateArray = require("../Utils/paginationHelper");
 const RefreshToken = require("../Models/refreshTokenModel");
 const Email = require("../Utils/mailSend");
+const generateOtp = require("../Utils/otpGenerator");
 // const Guardian = require("../Models/guardianModel");
 
 const filterObj = (obj, ...allowedFields) => {
