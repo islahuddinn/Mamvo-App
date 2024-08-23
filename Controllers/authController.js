@@ -268,7 +268,7 @@ exports.sendOTP = catchAsync(async (req, res, next) => {
   console.log(otp);
 
   try {
-    await new Email(newUser, otp).sendWelcome(otp);
+    await new Email(user, otp).sendWelcome(otp);
   } catch (error) {
     console.log(error);
   }
