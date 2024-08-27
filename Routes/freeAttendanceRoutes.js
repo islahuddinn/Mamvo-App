@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.post('/request-free-attendance/:eventId', authController.protect, freeAttendanceController.requestFreeAttendance)
 router.get('/get-all-free-attendance-requests', authController.protect, freeAttendanceController.getAllFreeAttendanceRequests)
-router.post('/change-free-attendance-request-status', authController.protect, freeAttendanceController.changeRequestStatus)
+router.post('/change-free-attendance-request-status/:freeAttendanceRequestId', authController.protect, freeAttendanceController.changeRequestStatus)
 
 
 
