@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 
 const eventSchema = new Schema({
-    eventId: { type: String, required: true, unique: true },
+    eventId: { type: String,  unique: true },
     name: { type: String, required: true },
     slug: { type: String },
     description: { type: String },
@@ -30,6 +30,13 @@ const eventSchema = new Schema({
       latitude: { type: Number },
       longitude: { type: Number },
       timezone: { type: String }
+    },
+    eventUrl:{
+      type: String
+    },
+    isCustom:{
+      type: Boolean,
+      default: false
     }
   });
   

@@ -114,3 +114,48 @@ exports.getUpComingEvents = catchAsync(async (req, res, next) => {
     console.log("ERROR WHILE FETCHING UPCOMING EVENTS:", error);
   }
 });
+
+
+
+exports.createCustomEvent = catchAsync(async(req,res,next)=>{
+  const {name, description, start_date,end_date,image_url,outfit, ambiences, music_genres,location, eventUrl, age } = req.body
+
+  if(!name || !description || !start_date || !end_date || !image_url || !outfit || !ambiences || !music_genres || !location || !eventUrl ){
+    return next(new AppError("Please provide all fields while creating event",400))
+  }
+
+  const customEvent = await Event.create({
+    name,
+    description,
+    start_date,
+    end_date,
+    image_url,
+    outfit,
+    ambiences,
+    music_genres,
+    location,
+    eventUrl,
+    age
+  })
+
+  if(!customEvent){
+    return next(new AppError("Error while creating custom event. Try Again!",400))
+  }
+
+  customEvent.eventId = customEvent._id
+  await customEvent.save()
+
+  res.status(200).json({
+    status:"success",
+    statusCode:200,
+    message:"Custom Event added successfully",
+    customEvent
+  })
+})
+
+
+
+
+
+exports.deleteEvent = factory.deleteOne(Event)
+exports.updateEvent = factory.updateOne(Event)
