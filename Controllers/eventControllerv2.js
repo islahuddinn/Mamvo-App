@@ -135,7 +135,8 @@ exports.createCustomEvent = catchAsync(async(req,res,next)=>{
     music_genres,
     location,
     eventUrl,
-    age
+    age,
+    isCustom: true
   })
 
   if(!customEvent){
