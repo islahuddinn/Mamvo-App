@@ -743,3 +743,47 @@ exports.logout = catchAsync(async (req, res, next) => {
     data: {},
   });
 });
+
+
+
+exports.adminRegister = catchAsync(async (req, res, next) => {
+  const admin = await User.create({
+    email: req.body.email,
+    password: req.body.password,
+    active: true,
+    isAdmin: true,
+    verified:true,
+    isProfileCompleted:true
+  });
+
+  if (!admin) {
+    return next(new AppError("Error while registering admin", 400));
+  }
+
+  res.status(201).json({
+    status: "success",
+    statusCode: 201,
+    message: "Admin Registered",
+    data: {
+      admin,
+    },
+  });
+});
+
+exports.adminLogin = catchAsync(async (req, res, next) => {
+  const { email, password} = req.body;
+  if (!email || !password) {
+    return next(new AppError("Provide both Email and Password", 400));
+  }
+  const admin = await User.findOne({ email }).select("+password");
+  if (!admin || !admin.isAdmin) {
+    return next(new AppError("Admin with this email do not exist", 404));
+  }
+
+  const isMatch = await admin.comparePasswordInDb(password, admin.password);
+  if (!isMatch) {
+    return next(new AppError("Please provide correct password", 400));
+  }
+
+  creatSendToken(admin, 200, "Logged In Successfully", res, req.body.device);
+});

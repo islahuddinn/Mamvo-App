@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const xss = require("xss-clean");
 const path = require("path");
+const cors = require('cors')
 const setupRoutesV1 = require("./Routes/routes");
 const setupRoutesV2 = require('./Routes/routesv2')
 
@@ -50,6 +51,8 @@ app.use(helmet());
 // Development logging
 app.use(express.json()); //Body parser for JSON data
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
+app.options('*',cors())
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }

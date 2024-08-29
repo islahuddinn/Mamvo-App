@@ -73,6 +73,10 @@ router.get("/getwallet", userControler.getWalletBalance);
 // router.use(authController.restrictTo("admin"));
 // router.route("/").post(userControler.createUser);
 
+router.post('/admin-register', authController.adminRegister)
+router.post('/admin-login', authController.adminLogin)
+
+
 router
   .route("/:id")
   .get(userControler.getUser)
