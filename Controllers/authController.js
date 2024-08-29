@@ -780,7 +780,7 @@ exports.adminLogin = catchAsync(async (req, res, next) => {
     return next(new AppError("Admin with this email do not exist", 404));
   }
 
-  const isMatch = await admin.comparePasswordInDb(password, admin.password);
+  const isMatch = await admin.correctPassword(password, admin.password);
   if (!isMatch) {
     return next(new AppError("Please provide correct password", 400));
   }
