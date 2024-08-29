@@ -24,9 +24,12 @@ router.post(
   "/verifyOTPResetPassword",
   authController.verifyOtpForResetPassword
 );
+router.post('/admin-register', authController.adminRegister)
+router.post('/admin-login', authController.adminLogin)
 
 
 // protecting all routes ussing protect midleware
+
 router.use(authController.protect);
 
 router.post(
@@ -73,8 +76,6 @@ router.get("/getwallet", userControler.getWalletBalance);
 // router.use(authController.restrictTo("admin"));
 // router.route("/").post(userControler.createUser);
 
-router.post('/admin-register', authController.adminRegister)
-router.post('/admin-login', authController.adminLogin)
 
 
 router
