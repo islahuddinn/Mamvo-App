@@ -1,26 +1,18 @@
 const mongoose = require("mongoose");
 
-const privacySchema = mongoose.Schema(
+const privacyPolicySchema = new mongoose.Schema(
   {
-    data: String,
-    creator: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-    },
+    
+    content: {
+      type: String,
+      required: [true, "Please provide content of this policy"],
+      trim: true,
+    }
+
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-// privacySchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "creator",
-//     select: "name image",
-//   });
-//   next();
-// });
+const PrivacyPolicy = mongoose.model("PrivacyPolicy", privacyPolicySchema);
 
-const Privacy = mongoose.model("Privacy", privacySchema);
-
-module.exports = Privacy;
+module.exports = PrivacyPolicy;

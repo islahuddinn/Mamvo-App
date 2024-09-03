@@ -4,26 +4,10 @@ const authController = require("../Controllers/authController");
 const PrivacyController = require("../Controllers/privacy-policyController");
 const router = express.Router();
 
-router.post(
-  "/create",
-  authController.protect,
-  PrivacyController.setCreator,
-  PrivacyController.createPrivacy
-);
-
-router.get("/", PrivacyController.getallPrivacy);
-router
-  .route("/:id")
-  .get(PrivacyController.getOnePrivacy)
-  .patch(
-    authController.protect,
-    // authController.restrictTo("admin"),
-    PrivacyController.updatePrivacy
-  )
-  .delete(
-    authController.protect,
-    // authController.restrictTo("admin"),
-    PrivacyController.deletePrivacy
-  );
+router.post('/create-policy', authController.protect,PrivacyController.createPrivacyPolicy)
+router.patch('/update-policy/:id', authController.protect, PrivacyController.updatePrivacyPolicy)
+router.delete('/delete-policy/:id', authController.protect,PrivacyController.deletePrivacyPolicy )
+router.get('/', PrivacyController.getAllPrivacyPolicy)
+router.get('/get-one-policy/:id',  PrivacyController.getOnePrivacyPolicy)
 
 module.exports = router;

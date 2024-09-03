@@ -1,29 +1,17 @@
 const mongoose = require("mongoose");
 
-const termsandconditionSchema = mongoose.Schema(
+const termsOfServiceSchema = new mongoose.Schema(
   {
-    data: String,
-    creator: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-    },
+    
+    content: {
+      type: String,
+      required: [true, "Please provide content of this term"],
+      trim: true,
+    }
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-// termsandconditionSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "creator",
-//     select: "name image",
-//   });
-//   next();
-// });
+const TermsOfService = mongoose.model("TermsOfService", termsOfServiceSchema);
 
-const TermsandCondition = mongoose.model(
-  "TermsandCondition",
-  termsandconditionSchema
-);
-
-module.exports = TermsandCondition;
+module.exports = TermsOfService;
