@@ -1,4 +1,5 @@
 const User = require("../Models/userModel");
+const Event = require('../Models/eventModelv2')
 const catchAsync = require("../Utils/catchAsync");
 const AppError = require("../Utils/appError");
 // const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -369,3 +370,36 @@ exports.myNotifications = catchAsync(async (req, res, next) => {
     data: notifications,
   });
 });
+
+
+
+
+exports.getStats = catchAsync(async(req,res,next)=>{
+  const totalUsers = (await User.find()).length
+  const totalAffiliateUsers = (await User.find({isAffiliate:true})).length
+  const totalPRUsers = (await User.find({isPRUser:true})).length
+  let events = await Event.find();
+  const currentDate = new Date()
+    const start =  currentDate;
+    const end = new Date('2100-12-31');
+
+    events = events.filter(event => {
+      const eventStartDate = new Date(event.start_date);
+      return eventStartDate >= start && eventStartDate <= end;
+    });
+
+
+    const totalUpcomingEvents = events.length
+  
+
+  res.stauts(200).json({
+    stauts:"success",
+    statusCode:200,
+    message:"Stats Fetched Successfully",
+    totalUsers,
+    totalAffiliateUsers,
+    totalPRUsers,
+    totalUpcomingEvents
+  })
+
+})

@@ -76,7 +76,7 @@ router.get("/getwallet", userControler.getWalletBalance);
 // router.use(authController.restrictTo("admin"));
 // router.route("/").post(userControler.createUser);
 
-
+router.get('/get-stats', userControler.getStats)
 
 router
   .route("/:id")
