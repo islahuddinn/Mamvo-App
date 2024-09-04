@@ -1,4 +1,4 @@
-const TermsOfService = require('../Models/termsOfServiceModel')
+const TermsOfService = require('../Models/termsAndConditionModel')
 const AppError = require("../Utils/appError");
 const catchAsync = require("../Utils/catchAsync");
 const factory = require("./handleFactory");
