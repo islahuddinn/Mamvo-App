@@ -9,8 +9,8 @@ const ticketRateRoutes = require('./ticketRateRoutes')
 const ticketRoutes = require('./ticketRoutes')
 const sellWithUsRoutes = require('./sellWithUsRoutes')
 const freeAttendanceRoutes = require('./freeAttendanceRoutes')
-const aboutUsRoutes = require('./Routes/aboutUsRoutes')
-const contactUsRoutes = require('./Routes/contactUsRoutes')
+const aboutUsRoutes = require('./aboutUsRoutes')
+const contactUsRoutes = require('./contactUsRoutes')
 
 const setupRoutesV1 = () => {
   const router = express.Router();
