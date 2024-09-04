@@ -28,9 +28,24 @@ exports.createContactUs = catchAsync(async(req,res,next)=>{
     })
 })
 
+exports.getAllContactUs = catchAsync(async(req,res,next)=>{
+    const contactUs = await ContactUs.findOne()
+  
+    if(!contactUs){
+        return next(new AppError("Could not fetch contact information.",400))
+    }
+  
+    res.status(200).json({
+        status:"success",
+        statusCode:200,
+        message:"Contact information fetched successfully",
+        contactUs
+    })
+  })
+
 
 exports.getContactUs = factory.getOne(ContactUs)
 exports.updateContactUs = factory.updateOne(ContactUs)
 exports.deleteContactUs = factory.deleteOne(ContactUs)
-exports.getAllContactUs = factory.getAll(ContactUs)
+//exports.getAllContactUs = factory.getAll(ContactUs)
 
