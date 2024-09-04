@@ -22,6 +22,23 @@ const contactUsSchema = new mongoose.Schema({
         trim: true
     },
 
+    facebook:{
+        type: String,
+        trim:true
+    },
+    twitter:{
+        type: String,
+        trim:true
+    },
+    linkedin:{
+        type: String,
+        trim:true
+    },
+    website:{
+        type: String,
+        trim:true
+    },
+
     createdBy:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
