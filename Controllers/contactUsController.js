@@ -5,7 +5,7 @@ const factory = require("./handleFactory");
 const he = require('he')
 
 exports.createContactUs = catchAsync(async(req,res,next)=>{
-    const {email,phone,content} = req.body
+    const {email,phone,content,facebook,twitter,linkedin,website} = req.body
     const existingContactUs = await ContactUs.find()
     if(existingContactUs.length > 0){
         return next(new AppError("Contact Us details already exist. You can update existing details.", 400))
@@ -14,6 +14,10 @@ exports.createContactUs = catchAsync(async(req,res,next)=>{
         email,
         content,
         phone,
+        facebook,
+        twitter,
+        linkedin,
+        website,
         createdBy: req.user._id
     })
 
