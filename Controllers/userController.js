@@ -392,7 +392,7 @@ exports.getStats = catchAsync(async(req,res,next)=>{
     const totalUpcomingEvents = events.length
   
 
-  res.stauts(200).json({
+  res.status(200).json({
     stauts:"success",
     statusCode:200,
     message:"Stats Fetched Successfully",
