@@ -7,8 +7,9 @@ const {calculateDistance} = require('../Helpers/DistanceCalculator')
 
 //exports.getAllEvents = factory.getAll(Event);
 
+
 exports.getAllEvents = catchAsync(async (req, res, next) => {
-  const { lat, lon, radius, startDate, endDate } = req.query;
+  const { lat, lon, radius, startDate, endDate, genres, category } = req.query;
 
   // Fetch all events from the database
   let events = await Event.find();
@@ -41,6 +42,43 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
       const eventStartDate = new Date(event.start_date);
       return eventStartDate >= start && eventStartDate <= end;
     });
+  
+    if (genres || category) {
+      // Define genre categories if not defined above
+      const genreCategories = {
+        all: [
+          'urban', 'pop', 'rock', 'remember', 'techno', 'house', 'edm', 'trap',
+          'reggaeton', 'latin', 'salsa', 'bachata', 'kizomba', 'r&b', 'dance', 
+          'indie', 'afrobeat', 'minimal', 'underground', 'tech-house', 
+          'drum-and-bass', 'acid-house', 'chill', 'hard-techno', 'melodic-techno', 
+          'hip-hop', 'reggae', 'disco', 'sing-along', 'acoustic', 'trance', 
+          'classical', 'soul', 'blues', 'jazz', 'metal', 'old-school', 'garage'
+        ],
+        electronica: [
+          'techno', 'house', 'edm', 'minimal', 'tech-house', 
+          'drum-and-bass', 'acid-house', 'hard-techno', 
+          'melodic-techno', 'trance', 'garage'
+        ],
+        comercial: [
+          'hits', 'urban', 'pop', 'rock', 'remember', 'dance', 
+          'indie', 'afrobeat', 'chill', 'disco', 'sing-along', 
+          'acoustic', 'classical', 'soul', 'blues', 'jazz', 
+          'metal', 'old-school', 'r&b', 'hip-hop', 'reggae'
+        ],
+        regueton: [
+          'reggaeton', 'latin', 'salsa', 'bachata', 'kizomba', 'trap'
+        ]
+      };
+  
+      // Get selected genres from query or from the category mapping
+      const selectedGenres = genres ? genres.split(',').map(g => g.toLowerCase()) : genreCategories[category.toLowerCase()] || [];
+  
+      // Filter events where at least one genre matches the selected genres
+      events = events.filter(event => {
+        const eventGenres = event.music_genres.map(genre => genre.toLowerCase());
+        return eventGenres.some(genre => selectedGenres.includes(genre));
+      });
+    }
   
 
   res.status(200).json({
