@@ -26,15 +26,7 @@ async function fetchAndStoreEvents() {
     //console.log("EVENTS IS:", events);
 
     for (const event of events) {
-    //   const existingEvent = await Event.findOne({ eventId: event._id }).lean();
-
-    //   const cleanedExistingEvent = existingEvent
-    //     ? cleanObject(existingEvent)
-    //     : null;
-    //   console.log("CLEANED:::::::::::", cleanedExistingEvent);
-
-    //   if (!existingEvent || !deepEqual(cleanedExistingEvent, event)) {
-    //     console.log("CHANGES IN EVENT FOUND. UPDATING IN DATABASE!!!!");
+   
         await Event.updateOne(
           { eventId: event._id },
           {
