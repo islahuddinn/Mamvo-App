@@ -226,7 +226,7 @@ exports.verifyTicketStatus = catchAsync(async (req, res, next) => {
   console.log("WEBHOOK TRIGGERED!!!");
   const signature = req.headers["x-webhook-signature"];
   const body = JSON.stringify(req.body);
-  const secret = "whsec_aH9Y530Y5m4UQ6sUykcYKeGkciwEigIqgAQwwu2ewek"; // Replace with your actual webhook secret key
+  const secret = "whsec_5ASuhLYeJUoK8MoCcUOYKKQEmkgiQMscCWkSIUY8eeu"; // Replace with your actual webhook secret key
 
   const hmacSha256 = (input, key) => {
     const hmac = crypto.createHmac("sha256", key);
