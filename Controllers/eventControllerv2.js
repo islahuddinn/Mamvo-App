@@ -79,7 +79,10 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
         return eventGenres.some(genre => selectedGenres.includes(genre));
       });
     }
-  
+    
+    console.log("----------------------------------------------------")
+
+    console.log("EVENTS IN GET ALL EVENTS AFTER FILTRATION:", events)
 
   res.status(200).json({
     status: "success",
