@@ -293,7 +293,9 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     status: "active",
     userId: req.user._id,
     userType: "registered-user",
-  }).sort('createdAt');
+  }).sort('-createdAt');
+
+  console.log("TICKETS ARE:::::", tickets)
 
   const ticketsCopy = JSON.parse(JSON.stringify(tickets));
 
@@ -323,6 +325,10 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     ticket.eventLocation = event.location;
     ticket.ticketName = ticketRate.name;
   }
+
+  console.log('-------------------------------------------------------')
+
+  console.log("TICKETS COPY ARE::::", ticketsCopy)
 
   res.status(200).json({
     status: "success",
