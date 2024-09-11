@@ -77,7 +77,7 @@ const ticketSchema = new mongoose.Schema({
   },
 
   paymentId:{type: String, required: true}
-});
+}, {timestamps:true});
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
 
