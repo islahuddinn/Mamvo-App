@@ -293,7 +293,7 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     status: "active",
     userId: req.user._id,
     userType: "registered-user",
-  }).sort('-createdAt');
+  }).sort('createdAt');
 
   const ticketsCopy = JSON.parse(JSON.stringify(tickets));
 
