@@ -79,6 +79,7 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
         return eventGenres.some(genre => selectedGenres.includes(genre));
       });
     }
+    console.log("REQ_QUERY ISSS::::", req.query)
     
     console.log("----------------------------------------------------")
 
