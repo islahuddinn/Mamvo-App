@@ -98,7 +98,7 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
       message: "Events fetched successfully",
       length: paginatedEvents.data.length,
       totalPages: paginatedEvents.totalPages,
-      totalResults: paginatedEvents.totalavailables,
+      //totalResults: paginatedEvents.totalavailables,
       events: paginatedEvents.data,
     });
 
