@@ -86,7 +86,7 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
 
     console.log("EVENTS IN GET ALL EVENTS AFTER FILTRATION:", events)
 
-    const paginatedEvents = paginationQueryExtracter(req, events);
+    const paginatedEvents = preFilteredDataPagination(req, events);
 
     console.log("PAGINATED EVENTS DATA:",paginatedEvents.data )
     console.log("PAGINATED EVENTS TOTAL PAGES:",paginatedEvents.totalPages)
