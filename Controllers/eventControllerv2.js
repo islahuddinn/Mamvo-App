@@ -4,6 +4,7 @@ const AppError = require("../Utils/appError");
 const axios = require("axios");
 const factory = require("./handleFactory");
 const {calculateDistance} = require('../Helpers/DistanceCalculator')
+const preFilteredDataPagination = require("../Utils/preFilteredDataPagination");
 
 //exports.getAllEvents = factory.getAll(Event);
 
@@ -85,13 +86,29 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
 
     console.log("EVENTS IN GET ALL EVENTS AFTER FILTRATION:", events)
 
-  res.status(200).json({
-    status: "success",
-    statusCode: 200,
-    message: "Events fetched successfully",
-    length: events.length,
-    events
-  });
+    const paginatedEvents = paginationQueryExtracter(req, events);
+
+    console.log("PAGINATED EVENTS DATA:",paginatedEvents.data )
+    console.log("PAGINATED EVENTS TOTAL PAGES:",paginatedEvents.totalPages)
+    console.log("PAGINATED EVENTS TOTAL AVAILALBE:", paginatedEvents.totalavailables)
+
+    res.status(200).json({
+      status: "success",
+      statusCode: 200,
+      message: "Events fetched successfully",
+      length: paginatedEvents.data.length,
+      totalPages: paginatedEvents.totalPages,
+      totalResults: paginatedEvents.totalavailables,
+      events: paginatedEvents.data,
+    });
+
+  // res.status(200).json({
+  //   status: "success",
+  //   statusCode: 200,
+  //   message: "Events fetched successfully",
+  //   length: events.length,
+  //   events
+  // });
 });
 
 exports.getOneEvent = catchAsync(async (req, res, next) => {
