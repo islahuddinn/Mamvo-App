@@ -1,4 +1,5 @@
 const Ticket = require("../Models/ticketModelv2");
+const Event = require("../Models/eventModelv2");
 const User = require("../Models/userModel");
 const Event = require("../Models/eventModelv2");
 const TicketRate = require("../Models/ticketRateModelv2");
@@ -6,6 +7,12 @@ const catchAsync = require("../Utils/catchAsync");
 const AppError = require("../Utils/catchAsync");
 const axios = require("axios");
 const crypto = require("crypto");
+const RefreshToken = require("../Models/refreshTokenModel");
+const Notification = require("../Models/notificationModel");
+const {
+  sendNotification,
+  sendMulticastNotification,
+} = require("../Utils/Notifications");
 
 exports.bookTicket = catchAsync(async (req, res, next) => {
   const { ticket_rate_id, tickets } = req.body;
@@ -29,10 +36,8 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
     const response = await axios.post(
       "https://channels-service-alpha.fourvenues.com/tickets/checkout",
       {
-        redirect_url:
-          "https://api.mamvoapp.com/tickets/success",
-        error_url:
-          "https://api.mamvoapp.com/tickets/fail",
+        redirect_url: "https://api.mamvoapp.com/tickets/success",
+        error_url: "https://api.mamvoapp.com/tickets/fail",
         //send_resourcers: true,
         // metadata:{
         //   userId: req.user._id
@@ -270,6 +275,37 @@ exports.verifyTicketStatus = catchAsync(async (req, res, next) => {
         ticket.status = "active";
 
         await ticket.save();
+        if (ticket.userType === "registered-user") {
+          const event = await Event.findOne({ eventId: ticket.eventId });
+          await Notification.create({
+            notificationType: "ticket-booked",
+            receiver: ticket.userId._id,
+            title: "Ticket Booked successfully",
+            body: `Your have successfully booked the ticket for ${event.name} .`,
+            data: ticket,
+          });
+          const fcmTokens = await RefreshToken.find({
+            user: ticket.userId._id,
+          }).then((tokens) => tokens.map(({ deviceToken }) => deviceToken));
+
+          console.log("FCM TOKENS ARE:", fcmTokens);
+
+          if (ticket.userId.isNotifications && fcmTokens.length > 1) {
+            await sendMulticastNotification({
+              fcmTokens,
+              title: "Ticket Booked successfully",
+              body: `Your have successfully booked the ticket for ${event.name} .`,
+              notificationData: JSON.stringify(ticket),
+            });
+          } else if (user.isNotifications && fcmTokens.length === 1) {
+            await sendNotification({
+              fcmToken: fcmTokens[0],
+              title: "Ticket Booked successfully",
+              body: `Your have successfully booked the ticket for ${event.name} .`,
+              notificationData: JSON.stringify(ticket),
+            });
+          }
+        }
       }
     }
 
@@ -284,7 +320,7 @@ exports.verifyTicketStatus = catchAsync(async (req, res, next) => {
       tickets,
     });
   } else {
-    return next(new CustomError("Unhandled Event in Payment Webhook",400))
+    return next(new CustomError("Unhandled Event in Payment Webhook", 400));
   }
 });
 
@@ -293,9 +329,9 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     status: "active",
     userId: req.user._id,
     userType: "registered-user",
-  }).sort('-createdAt');
+  }).sort("-createdAt");
 
-  console.log("TICKETS ARE:::::", tickets)
+  console.log("TICKETS ARE:::::", tickets);
 
   const ticketsCopy = JSON.parse(JSON.stringify(tickets));
 
@@ -326,9 +362,9 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     ticket.ticketName = ticketRate.name;
   }
 
-  console.log('-------------------------------------------------------')
+  console.log("-------------------------------------------------------");
 
-  console.log("TICKETS COPY ARE::::", ticketsCopy)
+  console.log("TICKETS COPY ARE::::", ticketsCopy);
 
   res.status(200).json({
     status: "success",

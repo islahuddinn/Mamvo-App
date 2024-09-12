@@ -64,7 +64,7 @@ const ticketSchema = new mongoose.Schema({
   //   total: { type: Number, required: true },
   //   hours: { type: Number, required: true }
   // },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
   userType:{
     type: String,
     enum:{
@@ -78,6 +78,16 @@ const ticketSchema = new mongoose.Schema({
 
   paymentId:{type: String, required: true}
 }, {timestamps:true});
+
+
+ticketSchema.pre([/^find/, 'save'], function(next){
+  this.populate({
+    path: 'userId',
+    select: 'isNotifications'
+  })
+
+  next()
+})
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
 

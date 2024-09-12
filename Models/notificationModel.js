@@ -7,7 +7,7 @@ const notificationSchema = new mongoose.Schema({
         type: String,
         required:[true, "Please define your notification type."],
         enum:{
-            values: ['message', 'password-reset', 'pr-request', 'affiliate-request', 'free-attendance-request'],
+            values: ['message', 'password-reset', 'pr-request', 'affiliate-request', 'free-attendance-request', 'ticket-booked'],
             message:"Please select a valid notification type."
         }
     },
