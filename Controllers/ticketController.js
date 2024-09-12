@@ -1,7 +1,6 @@
 const Ticket = require("../Models/ticketModelv2");
 const Event = require("../Models/eventModelv2");
 const User = require("../Models/userModel");
-const Event = require("../Models/eventModelv2");
 const TicketRate = require("../Models/ticketRateModelv2");
 const catchAsync = require("../Utils/catchAsync");
 const AppError = require("../Utils/catchAsync");
