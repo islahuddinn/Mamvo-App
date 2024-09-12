@@ -119,6 +119,11 @@ exports.changeRequestStatus = catchAsync(async (req, res, next) => {
 
     user.isPRUser = true;
     await user.save();
+  }else if(status === 'rejected'){
+    user = await User.findById(prRequest.requestedBy._id);
+    if (!user) {
+      return next(new AppError("User with this ID doesn't exist", 404));
+    }
   }
 
   //**SEND NOTIFICAITON HERE**//
