@@ -266,6 +266,8 @@ exports.changeRequestStatus = catchAsync(async (req, res, next) => {
   }
 
   //**SEND NOTIFICAITON HERE**//
+
+  console.log("USER IN ACCEPting aff is:", user)
   await Notification.create({
     notificationType: "affiliate-request",
     receiver: user._id,
