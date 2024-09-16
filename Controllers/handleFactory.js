@@ -116,6 +116,8 @@ exports.getAll = (Model, popOptions) =>
       data: {
         data: doc.data,
         totalPages: doc.totalPages,
+        hasPrevPage: doc.hasPrevPage,
+        hasNextPage: doc.hasNextPage
       },
     });
   });

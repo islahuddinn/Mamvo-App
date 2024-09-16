@@ -18,10 +18,14 @@ const paginationQueryExtracter = async (req, model, condition) => {
     .field();
   const totalavailables = (await countfeatures.query).length;
   totalPages = Math.ceil(totalavailables / (req.query.limit * 1));
+  const hasPrevPage = req.query.page > 1;
+  const hasNextPage = req.query.page < totalPages;
   return {
     data,
     totalPages,
     totalavailables,
+    hasPrevPage,
+    hasNextPage,
   };
 };
 module.exports = paginationQueryExtracter;
