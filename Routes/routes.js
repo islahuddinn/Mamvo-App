@@ -11,6 +11,7 @@ const sellWithUsRoutes = require('./sellWithUsRoutes')
 const freeAttendanceRoutes = require('./freeAttendanceRoutes')
 const aboutUsRoutes = require('./aboutUsRoutes')
 const contactUsRoutes = require('./contactUsRoutes')
+const discountRoutes = require('../Routes/discountRoutes')
 
 const setupRoutesV1 = () => {
   const router = express.Router();
@@ -26,6 +27,7 @@ const setupRoutesV1 = () => {
   router.use('/free-attendance', freeAttendanceRoutes)
   router.use('/about', aboutUsRoutes)
   router.use('/contact', contactUsRoutes)
+  router.use('/discounts', discountRoutes)
 
   return router;
 };
