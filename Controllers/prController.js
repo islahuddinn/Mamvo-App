@@ -11,11 +11,8 @@ const {
   sendNotification,
   sendMulticastNotification,
 } = require("../Utils/Notifications");
+const preFilteredDataPagination = require("../Utils/preFilteredDataPagination");
 
-// const Event = require("../Models/eventModel");
-// const Referral = require("../Models/referralModel");
-
-/// 1. Notify admin for request to join affiliate program
 
 exports.requestPRApproval = catchAsync(async (req, res, next) => {
 
@@ -70,11 +67,19 @@ exports.getAllPRRequests = catchAsync(async (req, res, next) => {
     return next(new AppError("Couldn't fetch any affiliate requests", 400));
   }
 
+  const paginatedRequests = preFilteredDataPagination(req, affiliateRequests);
+
+
   res.status(200).json({
     status: 200,
-    message: "Affiliate Requests fetched successfully",
+    message: "PR Requests fetched successfully",
     length: prRequests.length,
-    prRequests,
+    length: paginatedRequests.data.length,
+    totalPages: paginatedRequests.totalPages,
+    hasPrevPage: paginatedRequests.hasPrevPage,
+    hasNextPage: paginatedRequests.hasNextPage,
+    //totalResults: paginatedRequests.totalavailables,
+    prRequests:paginatedRequests.data,
   });
 });
 

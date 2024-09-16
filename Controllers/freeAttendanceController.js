@@ -9,6 +9,7 @@ const {
   sendNotification,
   sendMulticastNotification,
 } = require("../Utils/Notifications");
+const preFilteredDataPagination = require("../Utils/preFilteredDataPagination");
 
 exports.requestFreeAttendance = catchAsync(async (req, res, next) => {
   if (!req.user.isPRUser) {
@@ -82,11 +83,17 @@ exports.getAllFreeAttendanceRequests = catchAsync(async (req, res, next) => {
     );
   }
 
+  const paginatedRequests = preFilteredDataPagination(req, affiliateRequests);
+
   res.status(200).json({
     status: 200,
     message: "free attendance Requests fetched successfully",
-    length: freeAttendanceRequests.length,
-    freeAttendanceRequests,
+    length: paginatedRequests.data.length,
+    totalPages: paginatedRequests.totalPages,
+    hasPrevPage: paginatedRequests.hasPrevPage,
+    hasNextPage: paginatedRequests.hasNextPage,
+    //totalResults: paginatedRequests.totalavailables,
+    freeAttendanceRequests: paginatedRequests.data,
   });
 });
 
