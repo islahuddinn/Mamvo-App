@@ -78,17 +78,24 @@ async function fetchAndStoreTicketRates(eventId) {
     //console.log("------------------------------------------");
     //console.log("TICKET RATES IS:", ticketRates);
 
+    const existingRates = await TicketRate.find({ event_id: eventId });
+    const existingRateIds = existingRates.map((rate) => rate.ticketRateId);
+
+    const fetchedRateIds = ticketRates.map((rate) => rate._id);
+
+    // Remove ticket rates that exist in the database but not in the fetched data
+    const ratesToDelete = existingRateIds.filter(
+      (id) => !fetchedRateIds.includes(id)
+    );
+
+    for (const rateId of ratesToDelete) {
+      await TicketRate.deleteOne({ ticketRateId: rateId });
+      console.log(`Ticket rate with ID ${rateId} deleted from the database`);
+    }
+
+
     for (const rate of ticketRates) {
-    //   const existingRate = await TicketRate.findOne({
-    //     ticketRateId: rate._id,
-    //   }).lean();
-
-    //   const cleanedExistingRate = existingRate
-    //     ? cleanObject(existingRate)
-    //     : null;
-
-    //   if (!existingRate || !deepEqual(cleanedExistingRate, rate)) {
-    //     console.log("CHANGES IN TICKET RATE FOUND. UPDATING IN DATABASE!!!!");
+    
         await TicketRate.updateOne(
           { ticketRateId: rate._id },
           {
