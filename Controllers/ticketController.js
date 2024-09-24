@@ -291,6 +291,73 @@ exports.verifyTicketStatus = catchAsync(async (req, res, next) => {
   }
 });
 
+// exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
+//   const tickets = await Ticket.find({
+//     status: "active",
+//     userId: req.user._id,
+//     userType: "registered-user",
+//   }).sort("-createdAt");
+
+//   console.log("TICKETS ARE:::::", tickets);
+
+//   const ticketsCopy = JSON.parse(JSON.stringify(tickets));
+//   const groupedTickets = {};
+
+//   for (const ticket of ticketsCopy) {
+//     const event = await Event.findOne({ eventId: ticket.eventId });
+//     if (!event) {
+//       return next(
+//         new AppError("Could not find associated event with this ticket", 404)
+//       );
+//     }
+
+//     const ticketRate = await TicketRate.findOne({
+//       ticketRateId: ticket.ticketRateId,
+//     });
+//     if (!ticketRate) {
+//       return next(
+//         new AppError(
+//           "Could not find associated ticket rate with this ticket",
+//           404
+//         )
+//       );
+//     }
+//     ticket.eventName = event.name;
+//     ticket.eventImage = event.image_url;
+//     ticket.eventStartDate = event.start_date;
+//     ticket.eventEndDate = event.end_date;
+//     ticket.eventLocation = event.location;
+//     ticket.ticketName = ticketRate.name;
+    
+//     const groupKey = `${ticket.paymentId}_${ticket.userId}_${ticket.eventId}`;
+//     if (!groupedTickets[groupKey]) {
+//       groupedTickets[groupKey] = {
+//         paymentId: ticket.paymentId,
+//         eventId: ticket.eventId,
+//         userId: ticket.userId,
+//         tickets: [],
+//       };
+//     }
+
+//     groupedTickets[groupKey].tickets.push(ticket);
+//   }
+
+//   console.log("-------------------------------------------------------");
+//   const groupedTicketsArray = Object.values(groupedTickets);
+
+//   console.log("TICKETS COPY ARE::::", groupedTicketsArray);
+
+//   res.status(200).json({
+//     status: "success",
+//     statusCode: 200,
+//     message: "Tickets fetched succesfully",
+//     length: groupedTicketsArray.length,
+//     tickets: groupedTicketsArray,
+//   });
+// });
+
+
+
 exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
   const tickets = await Ticket.find({
     status: "active",
@@ -298,59 +365,70 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     userType: "registered-user",
   }).sort("-createdAt");
 
-  console.log("TICKETS ARE:::::", tickets);
-
+  // Create a copy of the tickets
   const ticketsCopy = JSON.parse(JSON.stringify(tickets));
   const groupedTickets = {};
 
   for (const ticket of ticketsCopy) {
+    // Fetch related event and ticket rate
     const event = await Event.findOne({ eventId: ticket.eventId });
     if (!event) {
-      return next(
-        new AppError("Could not find associated event with this ticket", 404)
-      );
+      return next(new AppError("Could not find associated event with this ticket", 404));
     }
 
-    const ticketRate = await TicketRate.findOne({
-      ticketRateId: ticket.ticketRateId,
-    });
+    const ticketRate = await TicketRate.findOne({ ticketRateId: ticket.ticketRateId });
     if (!ticketRate) {
-      return next(
-        new AppError(
-          "Could not find associated ticket rate with this ticket",
-          404
-        )
-      );
+      return next(new AppError("Could not find associated ticket rate with this ticket", 404));
     }
+
+    // Add event and ticket details to the ticket object
     ticket.eventName = event.name;
     ticket.eventImage = event.image_url;
     ticket.eventStartDate = event.start_date;
     ticket.eventEndDate = event.end_date;
     ticket.eventLocation = event.location;
     ticket.ticketName = ticketRate.name;
-    
+
+    // Group tickets by paymentId, userId, and eventId
     const groupKey = `${ticket.paymentId}_${ticket.userId}_${ticket.eventId}`;
     if (!groupedTickets[groupKey]) {
       groupedTickets[groupKey] = {
         paymentId: ticket.paymentId,
         eventId: ticket.eventId,
         userId: ticket.userId,
+        eventName: ticket.eventName,
+        eventImage: ticket.eventImage,
+        eventStartDate: ticket.eventStartDate,
+        eventEndDate: ticket.eventEndDate,
+        eventLocation: ticket.eventLocation,
+        ticketName: ticket.ticketName,
+        price: ticket.price,
         tickets: [],
       };
     }
 
-    groupedTickets[groupKey].tickets.push(ticket);
+    // Push only the unique fields (like qrCode) into the tickets array
+    groupedTickets[groupKey].tickets.push({
+      qrCode: ticket.qrCode,
+      ticketId: ticket.ticketId,
+      channelId: ticket.channelId,
+      fullName: ticket.fullName,
+      phone: ticket.phone,
+      email: ticket.email,
+      status: ticket.status,
+      totalFees: ticket.totalFees,
+      totalPrice: ticket.totalPrice,
+      createdAt: ticket.createdAt,
+      updatedAt: ticket.updatedAt,
+    });
   }
 
-  console.log("-------------------------------------------------------");
   const groupedTicketsArray = Object.values(groupedTickets);
-
-  console.log("TICKETS COPY ARE::::", groupedTicketsArray);
 
   res.status(200).json({
     status: "success",
     statusCode: 200,
-    message: "Tickets fetched succesfully",
+    message: "Tickets fetched successfully",
     length: groupedTicketsArray.length,
     tickets: groupedTicketsArray,
   });
