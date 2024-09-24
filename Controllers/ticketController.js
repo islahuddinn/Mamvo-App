@@ -410,16 +410,16 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     // Push only the unique fields (like qrCode) into the tickets array
     groupedTickets[groupKey].tickets.push({
       qrCode: ticket.qrCode,
-      ticketId: ticket.ticketId,
-      channelId: ticket.channelId,
-      fullName: ticket.fullName,
-      phone: ticket.phone,
-      email: ticket.email,
-      status: ticket.status,
-      totalFees: ticket.totalFees,
-      totalPrice: ticket.totalPrice,
-      createdAt: ticket.createdAt,
-      updatedAt: ticket.updatedAt,
+      // ticketId: ticket.ticketId,
+      // channelId: ticket.channelId,
+      // fullName: ticket.fullName,
+      // phone: ticket.phone,
+      // email: ticket.email,
+      // status: ticket.status,
+      // totalFees: ticket.totalFees,
+      // totalPrice: ticket.totalPrice,
+      // createdAt: ticket.createdAt,
+      // updatedAt: ticket.updatedAt,
     });
   }
 
