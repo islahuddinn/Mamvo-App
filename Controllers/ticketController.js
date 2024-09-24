@@ -192,39 +192,7 @@ exports.bookTicket = catchAsync(async (req, res, next) => {
   }
 });
 
-// exports.verifyTicketStatus = catchAsync(async(req,res,next)=>{
-//   console.log("_______________VERIFYING TICKET STATUS API HIT_______________")
-//    const {paymentId} = req.params
-//    if(!paymentId){
-//     return next(new AppError("Please provide the payment id of the ticket you booked",400))
-//    }
 
-//    console.log("PAYMENT ID IN PARMAS IS:", paymentId)
-
-//    const tickets = await Ticket.find({paymentId})
-
-//    console.log("TICKETS ARE:", tickets)
-
-//    for (const ticket of tickets){
-//     console.log("-------------------EXECUTING FOR LOOP--------------------")
-//     console.log("-----------TICKET_STATUS IS:", ticket.status)
-//     if(ticket.status === 'pending_payment'){
-//       console.log("-----------------TICKET STATUS IS PENDING CHANGING TICKET STATUS------------------")
-//       ticket.status = 'active'
-
-//       await ticket.save()
-//     }
-//    }
-
-//    console.log("----------------------SENDING RESPONSE FOR VERIFYING TICKET---------------------")
-
-//    res.status(200).json({
-//     status:"success",
-//     statusCode:200,
-//     message:"Payment is successfull",
-//     tickets
-//    })
-// })
 
 exports.verifyTicketStatus = catchAsync(async (req, res, next) => {
   console.log("WEBHOOK TRIGGERED!!!");
@@ -333,6 +301,7 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
   console.log("TICKETS ARE:::::", tickets);
 
   const ticketsCopy = JSON.parse(JSON.stringify(tickets));
+  const groupedTickets = {};
 
   for (const ticket of ticketsCopy) {
     const event = await Event.findOne({ eventId: ticket.eventId });
@@ -359,17 +328,30 @@ exports.getMyBookedTickets = catchAsync(async (req, res, next) => {
     ticket.eventEndDate = event.end_date;
     ticket.eventLocation = event.location;
     ticket.ticketName = ticketRate.name;
+    
+    const groupKey = `${ticket.paymentId}_${ticket.userId}_${ticket.eventId}`;
+    if (!groupedTickets[groupKey]) {
+      groupedTickets[groupKey] = {
+        paymentId: ticket.paymentId,
+        eventId: ticket.eventId,
+        userId: ticket.userId,
+        tickets: [],
+      };
+    }
+
+    groupedTickets[groupKey].tickets.push(ticket);
   }
 
   console.log("-------------------------------------------------------");
+  const groupedTicketsArray = Object.values(groupedTickets);
 
-  console.log("TICKETS COPY ARE::::", ticketsCopy);
+  console.log("TICKETS COPY ARE::::", groupedTicketsArray);
 
   res.status(200).json({
     status: "success",
     statusCode: 200,
     message: "Tickets fetched succesfully",
-    length: tickets.length,
-    tickets: ticketsCopy,
+    length: groupedTicketsArray.length,
+    tickets: groupedTicketsArray,
   });
 });

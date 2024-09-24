@@ -43,87 +43,107 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
     return eventStartDate >= start && eventStartDate <= end;
   });
 
+  
+  const genreCategories = {
+    all: [
+      "urban",
+      "pop",
+      "rock",
+      "remember",
+      "techno",
+      "house",
+      "edm",
+      "trap",
+      "reggaeton",
+      "latin",
+      "salsa",
+      "bachata",
+      "kizomba",
+      "r&b",
+      "dance",
+      "indie",
+      "afrobeat",
+      "minimal",
+      "underground",
+      "tech-house",
+      "drum-and-bass",
+      "acid-house",
+      "chill",
+      "hard-techno",
+      "melodic-techno",
+      "hip-hop",
+      "reggae",
+      "disco",
+      "sing-along",
+      "acoustic",
+      "trance",
+      "classical",
+      "soul",
+      "blues",
+      "jazz",
+      "metal",
+      "old-school",
+      "garage",
+      "hardcore"
+    ],
+    electronica: [
+      "techno",
+      "house",
+      "edm",
+      "minimal",
+      "tech-house",
+      "drum-and-bass",
+      "acid-house",
+      "hard-techno",
+      "melodic-techno",
+      "trance",
+      "garage",
+      "hardcore"
+    ],
+    comercial: [
+      "hits",
+      "urban",
+      "pop",
+      "rock",
+      "remember",
+      "dance",
+      "indie",
+      "afrobeat",
+      "chill",
+      "disco",
+      "sing-along",
+      "acoustic",
+      "classical",
+      "soul",
+      "blues",
+      "jazz",
+      "metal",
+      "old-school",
+      "r&b",
+      "hip-hop",
+      "reggae",
+    ],
+    regueton: ["reggaeton", "latin", "salsa", "bachata", "kizomba", "trap"],
+  };
+  const getParentGenres = (musicGenres) => {
+    return Object.keys(genreCategories).filter((parent) =>
+      genreCategories[parent].some((g) => musicGenres.includes(g))
+    );
+  };
+
+  // Add parentMusicGenre field to each event
+  events = events.map((event) => {
+    const eventGenres = event.music_genres.map((g) => g.toLowerCase());
+    const parentMusicGenres = getParentGenres(eventGenres);
+
+    return {
+      ...event.toObject(),
+      parentMusicGenres,
+    };
+  });
+
   if (genres || category) {
     // Define genre categories if not defined above
-    const genreCategories = {
-      all: [
-        "urban",
-        "pop",
-        "rock",
-        "remember",
-        "techno",
-        "house",
-        "edm",
-        "trap",
-        "reggaeton",
-        "latin",
-        "salsa",
-        "bachata",
-        "kizomba",
-        "r&b",
-        "dance",
-        "indie",
-        "afrobeat",
-        "minimal",
-        "underground",
-        "tech-house",
-        "drum-and-bass",
-        "acid-house",
-        "chill",
-        "hard-techno",
-        "melodic-techno",
-        "hip-hop",
-        "reggae",
-        "disco",
-        "sing-along",
-        "acoustic",
-        "trance",
-        "classical",
-        "soul",
-        "blues",
-        "jazz",
-        "metal",
-        "old-school",
-        "garage",
-      ],
-      electronica: [
-        "techno",
-        "house",
-        "edm",
-        "minimal",
-        "tech-house",
-        "drum-and-bass",
-        "acid-house",
-        "hard-techno",
-        "melodic-techno",
-        "trance",
-        "garage",
-      ],
-      comercial: [
-        "hits",
-        "urban",
-        "pop",
-        "rock",
-        "remember",
-        "dance",
-        "indie",
-        "afrobeat",
-        "chill",
-        "disco",
-        "sing-along",
-        "acoustic",
-        "classical",
-        "soul",
-        "blues",
-        "jazz",
-        "metal",
-        "old-school",
-        "r&b",
-        "hip-hop",
-        "reggae",
-      ],
-      regueton: ["reggaeton", "latin", "salsa", "bachata", "kizomba", "trap"],
-    };
 
     // Get selected genres from query or from the category mapping
     const selectedGenres = genres
@@ -165,13 +185,6 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
     events: paginatedEvents.data,
   });
 
-  // res.status(200).json({
-  //   status: "success",
-  //   statusCode: 200,
-  //   message: "Events fetched successfully",
-  //   length: events.length,
-  //   events
-  // });
 });
 
 exports.getOneEvent = catchAsync(async (req, res, next) => {
