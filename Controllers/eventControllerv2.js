@@ -9,21 +9,26 @@ const preFilteredDataPagination = require("../Utils/preFilteredDataPagination");
 //exports.getAllEvents = factory.getAll(Event);
 
 exports.getAllEvents = catchAsync(async (req, res, next) => {
-  const { lat, lon, radius, startDate, endDate, genres, category } = req.query;
+  const { lat, lon, radius, startDate, endDate, genres, category, search } = req.query;
 
-  // Fetch all events from the database
   let events = await Event.find();
 
   if (!events) {
     return next(new AppError("Error fetching events", 400));
   }
 
-  // Filter events by location if latitude, longitude, and radius are provided
+  if (search) {
+    const searchKeyword = search.toLowerCase();
+    events = events.filter((event) => {
+      const locationName = event.location.name?.toLowerCase() || '';
+      return locationName.includes(searchKeyword);
+    });
+  }
+
   if (lat && lon) {
     const userLat = parseFloat(lat);
     const userLon = parseFloat(lon);
-    const maxDistance = radius ? parseFloat(radius) : 10; // Default to 10 km if radius is not provided
-
+    const maxDistance = radius ? parseFloat(radius) : 10;
     events = events.filter((event) => {
       const eventLat = event.location.latitude;
       const eventLon = event.location.longitude;
@@ -32,7 +37,7 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
     });
   }
 
-  // Filter events by date range if startDate and endDate are provided
+  
 
   const currentDate = new Date();
   const start = startDate ? new Date(startDate) : currentDate;
@@ -131,7 +136,6 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
     );
   };
 
-  // Add parentMusicGenre field to each event
   events = events.map((event) => {
     const eventGenres = event.music_genres.map((g) => g.toLowerCase());
     const parentMusicGenres = getParentGenres(eventGenres);
@@ -143,14 +147,12 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
   });
 
   if (genres || category) {
-    // Define genre categories if not defined above
-
-    // Get selected genres from query or from the category mapping
+    
     const selectedGenres = genres
       ? genres.split(",").map((g) => g.toLowerCase())
       : genreCategories[category.toLowerCase()] || [];
 
-    // Filter events where at least one genre matches the selected genres
+    
     events = events.filter((event) => {
       const eventGenres = event.music_genres.map((genre) =>
         genre.toLowerCase()
@@ -158,20 +160,9 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
       return eventGenres.some((genre) => selectedGenres.includes(genre));
     });
   }
-  console.log("REQ_QUERY ISSS::::", req.query);
-
-  console.log("----------------------------------------------------");
-
-  console.log("EVENTS IN GET ALL EVENTS AFTER FILTRATION:", events);
 
   const paginatedEvents = preFilteredDataPagination(req, events);
 
-  console.log("PAGINATED EVENTS DATA:", paginatedEvents.data);
-  console.log("PAGINATED EVENTS TOTAL PAGES:", paginatedEvents.totalPages);
-  console.log(
-    "PAGINATED EVENTS TOTAL AVAILALBE:",
-    paginatedEvents.totalavailables
-  );
 
   res.status(200).json({
     status: "success",
